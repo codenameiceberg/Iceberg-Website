@@ -1,0 +1,1957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iceberg</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Dots&family=Kantumruy+Pro:wght@400;500;600;700&family=Gabarito:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
+            min-height: 100vh;
+            background: #BAD3DA; /* Fallback color */
+        }
+        
+        /* Fixed background that changes with scroll */
+        .scroll-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(180deg, #BAD3DA 0%, #227190 100%);
+            transition: background 0.1s ease;
+        }
+        
+        /* Navigation - starts transparent, becomes translucent in mission section */
+        .navigation-container { 
+            max-width: 1620px; 
+            margin: 0 auto; 
+            padding: 27px 40px; 
+            transition: all 0.3s ease; 
+            position: relative; 
+            z-index: 100; 
+            background: transparent; 
+        }
+        .navigation-container.sticky { 
+            position: fixed; 
+            top: 20px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            max-width: 1400px; 
+            width: 95%; 
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            border-radius: 20px; 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); 
+            padding: 20px 40px; 
+        }
+        /* When sticky, adjust nav link colors for dark background (logo stays same) */
+        .navigation-container.sticky .nav-link { color: rgba(255, 255, 255, 0.7); }
+        .navigation-container.sticky .nav-link:hover { color: white; }
+        .nav-wrapper { display: flex; justify-content: space-between; align-items: center; gap: 30px; }
+        .logo { font-family: 'Zen Dots', cursive; font-size: 48.6px; color: rgb(30, 91, 115); white-space: nowrap; transition: font-size 0.3s ease; flex-shrink: 0; }
+        .nav-items { display: flex; gap: 36.45px; align-items: center; flex-shrink: 1; }
+        .nav-link { font-family: 'Gabarito', sans-serif; font-weight: 700; font-size: 27px; color: white; text-decoration: none; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; }
+        .nav-link:hover { color: rgba(255, 255, 255, 0.7); }
+        .waitlist-button { font-family: 'Kantumruy Pro', sans-serif; font-weight: 700; font-size: 21.6px; color: white; background-color: rgb(30, 91, 114); padding: 18.9px 29.7px; border: none; border-radius: 1350px; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; flex-shrink: 0; }
+        .waitlist-button:hover { background-color: rgb(40, 111, 134); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(30, 91, 114, 0.3); }
+        .mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; }
+        .mobile-menu-btn svg { fill: rgb(30, 91, 115); transition: fill 0.3s ease; }
+        
+        /* Header - transparent to show gradient */
+        .header-section { 
+            max-width: 1920px; 
+            margin: 0 auto; 
+            padding: 80px 40px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            background: transparent; 
+            min-height: calc(100vh - 120px); 
+            justify-content: center; 
+            gap: 48px;
+            text-align: center;
+        }
+        
+        /* Typing Text Container */
+        .typing-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .typing-wrapper {
+            min-height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 1200px;
+            padding: 0 40px;
+        }
+
+        .typing-text {
+            font-family: 'Gabarito', sans-serif;
+            font-weight: 600;
+            font-size: 84px;
+            color: white;
+            position: relative;
+            display: inline;
+            line-height: 1.2;
+        }
+
+        /* Blinking cursor - uses ::after to follow text */
+        .typing-text::after {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 0.9em;
+            background: white;
+            margin-left: 4px;
+            vertical-align: baseline;
+            position: relative;
+            top: 0.1em;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Tagline below */
+        .header-tagline {
+            font-family: 'Kantumruy Pro', sans-serif;
+            font-weight: 300;
+            font-style: italic;
+            font-size: 28px;
+            color: #227190;
+            line-height: 1.4;
+            max-width: 600px;
+            letter-spacing: 0.5px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: headerFadeInUp 1s ease 0.5s forwards;
+        }
+
+        @keyframes headerFadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            animation: headerFadeInUp 1s ease 1s forwards;
+            margin-top: 40px;
+        }
+
+        .scroll-text {
+            font-family: 'Kantumruy Pro', sans-serif;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .scroll-arrow {
+            width: 24px;
+            height: 24px;
+            border-right: 2px solid rgba(255, 255, 255, 0.6);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.6);
+            transform: rotate(45deg);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: rotate(45deg) translateX(0) translateY(0);
+            }
+            40% {
+                transform: rotate(45deg) translateX(7px) translateY(7px);
+            }
+            60% {
+                transform: rotate(45deg) translateX(3.5px) translateY(3.5px);
+            }
+        }
+        
+        .header-title { font-family: 'Gabarito', sans-serif; font-weight: 600; font-size: 170px; color: #227190; text-align: center; line-height: 1; letter-spacing: -3px; max-width: 1540px; padding: 0 40px; }
+        
+        /* Mission Section - has its own background layered on gradient */
+        .mission-section { 
+            /* Fluid padding: scales from 20px to 261px based on viewport */
+            padding: clamp(60px, 12vw, 173px) clamp(20px, 15vw, 261px); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            background-color: #21708F; 
+            min-height: auto;
+            justify-content: center; 
+            position: relative;
+        }
+        
+        .mission-badge {
+            background-color: #68AFC4;
+            color: white;
+            /* Fluid padding and font-size */
+            padding: clamp(12px, 1.5vw, 16px) clamp(20px, 3vw, 32px);
+            display: inline-block;
+            font-family: 'Gabarito', sans-serif;
+            font-weight: 600;
+            font-size: clamp(16px, 2vw, 21.6px);
+            border-radius: 8px;
+            margin-bottom: clamp(32px, 5vw, 54px);
+        }
+        
+        .mission-title {
+            color: white;
+            text-align: center;
+            font-family: 'Gabarito', sans-serif;
+            font-weight: 700;
+            /* Fluid font-size: scales from 32px to 64.8px */
+            font-size: clamp(32px, 5vw, 64.8px);
+            line-height: 1.2;
+            max-width: 1098px;
+            margin: 0 0 clamp(32px, 5vw, 54px) 0;
+            padding: 0 20px;
+        }
+        
+        .mission-content {
+            max-width: 1098px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(24px, 4vw, 40px);
+        }
+        
+        .mission-text {
+            color: white;
+            font-family: 'Kantumruy Pro', sans-serif;
+            /* Fluid font-size: scales from 17px to 24.3px */
+            font-size: clamp(17px, 2vw, 24.3px);
+            line-height: 1.7;
+            text-align: left; /* Left-aligned for readability */
+            margin: 0;
+        }
+        
+        /* Goals Section - transparent to show body gradient */
+        .goals-section { 
+            padding: clamp(60px, 12vw, 173px) clamp(20px, 10vw, 200px); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            background: transparent; 
+            gap: clamp(60px, 10vw, 120px); 
+        }
+        
+        .goals-header { 
+            display: flex; 
+            flex-direction: column; 
+            gap: clamp(16px, 3vw, 32px); 
+            max-width: 1036px; 
+            text-align: center;
+            align-items: center;
+        }
+        
+        .goals-badge {
+            background-color: #68AFC4;
+            color: white;
+            padding: clamp(12px, 1.5vw, 16px) clamp(20px, 3vw, 32px);
+            display: inline-block;
+            font-family: 'Gabarito', sans-serif;
+            font-weight: 600;
+            font-size: clamp(16px, 2vw, 21.6px);
+            border-radius: 8px;
+        }
+        
+        .goals-title { 
+            font-family: 'Gabarito', sans-serif; 
+            font-weight: 700; 
+            font-size: clamp(32px, 5vw, 64.8px); 
+            color: white; 
+            line-height: 1.2; 
+        }
+        
+        .goals-subtitle { 
+            font-family: 'Kantumruy Pro', sans-serif; 
+            font-weight: 400; 
+            font-size: clamp(16px, 2vw, 27px); 
+            color: rgba(255, 255, 255, 0.8); 
+            line-height: 1.6; 
+        }
+        
+        /* Timeline container */
+        .goals-timeline { 
+            position: relative; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;
+            width: 100%;
+            max-width: 1000px;
+            gap: 0;
+        }
+        
+        /* Center gradient line - single bar from first to last circle center */
+        .goals-timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            /* Offset = goal-item padding + half circle height */
+            top: calc(clamp(20px, 4vw, 40px) + clamp(35px, 4vw, 54px));
+            bottom: calc(clamp(20px, 4vw, 40px) + clamp(35px, 4vw, 54px));
+            width: 4px;
+            background: linear-gradient(180deg, 
+                rgba(104, 175, 196, 0.8) 0%, 
+                rgba(74, 143, 168, 0.8) 33%, 
+                rgba(53, 113, 140, 0.8) 66%, 
+                rgba(30, 91, 114, 0.8) 100%
+            );
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+        
+        /* Individual goal item */
+        .goal-item { 
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            width: 100%;
+            padding: clamp(20px, 4vw, 40px) 0;
+            position: relative;
+        }
+        
+        /* Left side content area */
+        .goal-left-side {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: clamp(12px, 2vw, 24px);
+            padding-right: clamp(16px, 3vw, 32px);
+        }
+        
+        /* Right side content area */
+        .goal-right-side {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: clamp(12px, 2vw, 24px);
+            padding-left: clamp(16px, 3vw, 32px);
+        }
+        
+        /* Circle in center */
+        .goal-circle { 
+            width: clamp(70px, 8vw, 108px); 
+            height: clamp(70px, 8vw, 108px); 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: 0 5.4px 8.1px rgba(0, 0, 0, 0.15);
+            position: relative;
+            z-index: 2;
+            flex-shrink: 0;
+        }
+        
+        .circle-1 { background-color: rgb(104, 175, 196); }
+        .circle-2 { background-color: rgb(74, 143, 168); }
+        .circle-3 { background-color: rgb(53, 113, 140); }
+        .circle-4 { background-color: rgb(30, 91, 114); }
+        
+        .goal-icon { 
+            width: clamp(32px, 4vw, 48px); 
+            height: clamp(32px, 4vw, 48px); 
+        }
+        
+        /* Number styling */
+        .goal-number { 
+            font-family: 'Zen Dots', cursive; 
+            font-size: clamp(40px, 6vw, 81px); 
+            color: rgba(255, 255, 255, 0.25); 
+            line-height: 1;
+            flex-shrink: 0;
+        }
+        
+        /* Text styling */
+        .goal-text { 
+            font-family: 'Kantumruy Pro', sans-serif; 
+            font-weight: 500; 
+            font-size: clamp(16px, 1.8vw, 24px); 
+            color: white; 
+            line-height: 1.5; 
+            max-width: 280px;
+            transition: transform 0.3s ease;
+        }
+        
+        /* Add transitions for hover effects */
+        .goal-circle {
+            transition: transform 0.3s ease;
+        }
+        .goal-number {
+            transition: transform 0.3s ease;
+        }
+        
+        /* Desktop hover effects - scale up on hover */
+        @media (min-width: 769px) {
+            .goal-item {
+                cursor: pointer;
+            }
+            
+            .goal-item:hover .goal-circle {
+                transform: scale(1.15);
+            }
+            
+            .goal-item:hover .goal-number {
+                transform: scale(1.15);
+            }
+            
+            .goal-item:hover .goal-text {
+                transform: scale(1.08);
+            }
+        }
+        
+        /* Left-aligned goal (text on left) */
+        .goal-item.goal-left .goal-left-side {
+            order: 1;
+        }
+        .goal-item.goal-left .goal-circle {
+            order: 2;
+        }
+        .goal-item.goal-left .goal-right-side {
+            order: 3;
+            visibility: hidden; /* Empty placeholder to maintain grid */
+        }
+        .goal-item.goal-left .goal-text {
+            text-align: right;
+        }
+        
+        /* Right-aligned goal (text on right) */
+        .goal-item.goal-right .goal-left-side {
+            order: 1;
+            visibility: hidden; /* Empty placeholder to maintain grid */
+        }
+        .goal-item.goal-right .goal-circle {
+            order: 2;
+        }
+        .goal-item.goal-right .goal-right-side {
+            order: 3;
+        }
+        .goal-item.goal-right .goal-text {
+            text-align: left;
+        }
+        
+        /* Features Section - transparent to show body gradient */
+        .features-section { background: transparent; padding: 173px 40px; display: flex; flex-direction: column; align-items: center; gap: 48px; }
+        .features-header { display: flex; flex-direction: column; align-items: center; gap: 32px; max-width: 1036.79px; }
+        .features-badge { display: inline-flex; padding: 16px 39px; background: #68AFC4; border-radius: 8px; }
+        .features-badge-text { color: white; font-family: 'Gabarito', sans-serif; font-size: 21.6px; font-weight: 600; }
+        .features-title { color: white; text-align: center; font-family: 'Gabarito', sans-serif; font-size: 64.8px; font-weight: 700; line-height: 1; }
+        .features-subtitle { color: rgba(255, 255, 255, 0.9); text-align: center; font-family: 'Kantumruy Pro', sans-serif; font-size: 27px; }
+        .features-content { display: flex; flex-direction: column; gap: 48px; max-width: 1382px; width: 100%; }
+        
+        /* Desktop: Buttons in a row */
+        .features-buttons { display: flex; gap: 20px; width: 100%; }
+        .feature-group { flex: 1; display: flex; flex-direction: column; }
+        .feature-button { border-radius: 20px; display: flex; flex-direction: column; justify-content: flex-start; cursor: pointer; transition: all 0.3s ease; padding: 40px; position: relative; }
+        .feature-button.active { background: linear-gradient(0deg, #68AFC4 0%, #68AFC4 100%); min-height: 287px; }
+        .feature-button.inactive { background: #E1ECED; min-height: 273px; }
+        .feature-button h3 { font-family: 'Gabarito', sans-serif; font-size: 30px; font-weight: 700; margin: 20px 0 12px 0; }
+        .feature-button p { font-family: 'Kantumruy Pro', sans-serif; font-size: 20px; margin: 0; }
+        .feature-button.active h3, .feature-button.active p { color: white; }
+        .feature-button.active svg { color: white; }
+        .feature-button.inactive h3, .feature-button.inactive p { color: #4A5565; }
+        .feature-button.inactive svg { color: #4A5565; }
+        
+        /* Dropdown arrow - hidden on desktop */
+        .feature-button .dropdown-arrow { display: none; position: absolute; right: 20px; top: 50%; transform: translateY(-50%); transition: transform 0.3s ease; }
+        .feature-button.expanded .dropdown-arrow { transform: translateY(-50%) rotate(180deg); }
+        
+        /* Mobile subfeatures - hidden on desktop */
+        .mobile-subfeatures { display: none; overflow: hidden; max-height: 0; transition: max-height 0.4s ease-out; }
+        .mobile-subfeatures.expanded { max-height: 2000px; transition: max-height 0.6s ease-in; }
+        .mobile-subfeatures-grid { display: grid; grid-template-columns: 1fr; gap: 16px; padding: 20px; }
+        
+        /* Desktop: Subfeatures below buttons */
+        .subfeatures-container { display: flex; flex-direction: column; gap: 40px; padding: 62px; border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.10); background: rgba(255, 255, 255, 0.05); }
+        .subfeature-header { display: flex; align-items: center; gap: 20px; }
+        .subfeature-icon { display: flex; width: 81px; height: 81px; justify-content: center; align-items: center; border-radius: 20px; background: #68AFC4; }
+        .subfeature-title { color: white; font-family: 'Gabarito', sans-serif; font-size: 38px; font-weight: 700; }
+        .subfeature-subtitle { color: rgba(255, 255, 255, 0.7); font-family: 'Kantumruy Pro', sans-serif; font-size: 20px; }
+        .subfeatures-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .subfeature-box { border-radius: 18px; border: 1px solid rgba(255, 255, 255, 0.15); background: rgba(255, 255, 255, 0.08); padding: 30px; min-height: 200px; }
+        .subfeature-box-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+        .subfeature-box-icon svg { width: 40px; height: 40px; }
+        .subfeature-box h4 { color: white; font-family: 'Gabarito', sans-serif; font-size: 25px; font-weight: 600; margin: 20px 0 12px 0; }
+        .subfeature-box p { color: rgba(255, 255, 255, 0.7); font-family: 'Kantumruy Pro', sans-serif; font-size: 20px; }
+        
+        /* Founder Section - transparent to show body gradient */
+        .founder-section { background: transparent; padding: 173px 40px; display: flex; flex-direction: column; align-items: center; gap: 86px; }
+        .founder-header { display: flex; flex-direction: column; gap: 32px; max-width: 1036px; text-align: center; align-items: center; }
+        .founder-badge {
+            background-color: #68AFC4;
+            color: white;
+            padding: clamp(12px, 1.5vw, 16px) clamp(20px, 3vw, 32px);
+            display: inline-block;
+            font-family: 'Gabarito', sans-serif;
+            font-weight: 600;
+            font-size: clamp(16px, 2vw, 21.6px);
+            border-radius: 8px;
+        }
+        .founder-header h2 { font-family: 'Gabarito', sans-serif; font-weight: 700; font-size: 64.8px; color: white; line-height: 1.2; }
+        .founder-header p { font-family: 'Kantumruy Pro', sans-serif; font-weight: 400; font-size: 27px; color: rgba(255, 255, 255, 0.9); line-height: 1.5; }
+        .founder-card { display: flex; max-width: 1386px; width: 100%; background: white; border-radius: 32px; overflow: hidden; box-shadow: 0 10.8px 13.5px rgba(0, 0, 0, 0.1), 0 27px 33.75px rgba(0, 0, 0, 0.1); }
+        .founder-image { width: 40%; min-width: 400px; position: relative; }
+        .founder-image img { width: 100%; height: 100%; object-fit: cover; object-position: center 25%; display: block; }
+        .founder-image::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(180deg, rgba(104, 175, 196, 0.2) 0%, rgba(34, 113, 144, 0.2) 100%); pointer-events: none; }
+        .founder-content { flex: 1; padding: 64.8px; display: flex; flex-direction: column; gap: 21.6px; }
+        .founder-name { font-family: 'Gabarito', sans-serif; font-weight: 700; font-size: 48.6px; color: #080E22; margin: 0; }
+        .founder-role { font-family: 'Kantumruy Pro', sans-serif; font-weight: 600; font-size: 27px; color: #227190; margin: 0 0 10px 0; }
+        .founder-bio { display: flex; flex-direction: column; gap: 21.6px; }
+        .founder-bio p { font-family: 'Kantumruy Pro', sans-serif; font-weight: 400; font-size: 24.3px; color: #364153; line-height: 1.6; margin: 0; }
+        .founder-linkedin { display: inline-flex; width: 64.8px; height: 64.8px; border-radius: 32.4px; background: linear-gradient(180deg, #68AFC4 0%, #227190 100%); align-items: center; justify-content: center; margin-top: 10px; transition: transform 0.3s ease, box-shadow 0.3s ease; text-decoration: none; }
+        .founder-linkedin:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(34, 113, 144, 0.4); }
+        .founder-divider { width: 100%; height: 1px; background-color: #E5E7EB; margin: 10px 0 32px 0; }
+        .founder-credentials { display: flex; flex-direction: column; gap: 20px; }
+        .credential-item { display: flex; align-items: center; gap: 16px; }
+        .credential-item svg { width: 28px; height: 28px; flex-shrink: 0; stroke: #227190; fill: none; stroke-width: 1.5; }
+        .credential-item span { font-family: 'Gabarito', sans-serif; font-weight: 600; font-size: 18px; color: #227190; }
+        
+        /* Waitlist Section */
+        .waitlist-section { background: linear-gradient(180deg, #227190 0%, #68AFC4 100%); padding: 120px 40px; display: flex; flex-direction: column; align-items: center; gap: 48px; position: relative; overflow: hidden; cursor: none; }
+        .waitlist-content { max-width: 800px; text-align: center; display: flex; flex-direction: column; gap: 24px; position: relative; z-index: 1; }
+        .waitlist-content h2 { font-family: 'Gabarito', sans-serif; font-weight: 700; font-size: 64.8px; color: white; line-height: 1.1; }
+        .waitlist-content p { font-family: 'Kantumruy Pro', sans-serif; font-weight: 400; font-size: 27px; color: rgba(255, 255, 255, 0.9); line-height: 1.5; }
+        .waitlist-form { display: flex; gap: 16px; max-width: 600px; width: 100%; position: relative; z-index: 1; }
+        .waitlist-input-wrapper { flex: 1; position: relative; }
+        .waitlist-form input { width: 100%; padding: 20px 28px; border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 1000px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); font-family: 'Kantumruy Pro', sans-serif; font-size: 21px; color: white; outline: none; transition: all 0.3s ease; cursor: none; }
+        .waitlist-form input::placeholder { color: rgba(255, 255, 255, 0.6); }
+        .waitlist-form input:focus { border-color: white; background: rgba(255, 255, 255, 0.2); box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1); }
+        .waitlist-form button { padding: 20px 40px; background: #080E22; border: none; border-radius: 1000px; font-family: 'Kantumruy Pro', sans-serif; font-weight: 700; font-size: 21px; color: white; cursor: none; transition: all 0.3s ease; white-space: nowrap; position: relative; overflow: hidden; }
+        .waitlist-form button:hover { background: #1a2744; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); }
+        
+        /* Pulsing glow on input */
+        .waitlist-input-wrapper::before { content: ''; position: absolute; top: -4px; left: -4px; right: -4px; bottom: -4px; border-radius: 1000px; background: rgba(255, 255, 255, 0.2); animation: waitlist-pulse-glow 2.5s ease-in-out infinite; opacity: 1; z-index: -1; pointer-events: none; transition: opacity 0.3s ease; }
+        .waitlist-input-wrapper.focused::before { animation: none; opacity: 0.6; transform: scale(1.02); }
+        .waitlist-input-wrapper.has-content::before { animation: none; opacity: 0.6; transform: scale(1.02); }
+        @keyframes waitlist-pulse-glow { 0%, 100% { opacity: 0; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.02); } }
+        
+        /* Button shimmer - only when typing */
+        .waitlist-form button::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%); }
+        .waitlist-form button.typing::before { animation: waitlist-shimmer 3s ease-in-out infinite; }
+        .waitlist-form button:hover::before { animation: none; }
+        @keyframes waitlist-shimmer { 0% { left: -100%; } 50%, 100% { left: 100%; } }
+        
+        /* Success state */
+        .waitlist-form.success input { border-color: #4ADE80; background: rgba(74, 222, 128, 0.1); }
+        .waitlist-form.success .waitlist-input-wrapper::before { background: rgba(74, 222, 128, 0.3); }
+        .waitlist-form.success button { background: #4ADE80; pointer-events: none; }
+        
+        /* Floating particles */
+        .waitlist-particles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
+        .waitlist-particle { position: absolute; background: rgba(255, 255, 255, 0.1); border-radius: 50%; animation: waitlist-float-up linear infinite; }
+        @keyframes waitlist-float-up { 0% { transform: translateY(100%) scale(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-100px) scale(1); opacity: 0; } }
+        
+        /* Custom cursor */
+        .waitlist-cursor { position: fixed; width: 20px; height: 20px; border: 2px solid rgba(255, 255, 255, 0.8); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: transform 0.1s ease, width 0.2s ease, height 0.2s ease, background 0.2s ease; opacity: 0; }
+        .waitlist-cursor.clicking { transform: translate(-50%, -50%) scale(0.8); background: rgba(255, 255, 255, 0.3); }
+        
+        /* Cursor bubbles */
+        .cursor-bubble { position: fixed; border-radius: 50%; pointer-events: none; z-index: 9998; background: rgba(255, 255, 255, 0.3); animation: bubble-float 1.5s ease-out forwards; }
+        @keyframes bubble-float { 0% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -150px) scale(0.5); } }
+        
+        /* Contact Section - transparent to show body gradient */
+        .contact-section { background: transparent; padding: 173px 40px; display: flex; justify-content: center; }
+        .contact-wrapper { display: flex; gap: 80px; max-width: 1200px; width: 100%; align-items: flex-start; justify-content: center; }
+        .contact-info { flex: 0 1 450px; }
+        .contact-info h2 { font-family: 'Gabarito', sans-serif; font-weight: 700; font-size: 64.8px; color: white; margin: 0 0 32px 0; line-height: 1.1; }
+        .contact-info p { font-family: 'Kantumruy Pro', sans-serif; font-weight: 400; font-size: 27px; color: rgba(255, 255, 255, 0.9); line-height: 1.5; margin: 0; }
+        .contact-form-wrapper { flex: 0 1 550px; }
+        .contact-form { background: white; border-radius: 32px; padding: 48px; display: flex; flex-direction: column; gap: 24px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        .form-group { display: flex; flex-direction: column; gap: 10px; }
+        .form-group label { font-family: 'Kantumruy Pro', sans-serif; font-weight: 600; font-size: 18px; color: #080E22; }
+        .form-group input, .form-group textarea { padding: 18px 20px; border: 1px solid #D1D5DB; border-radius: 18px; font-family: 'Kantumruy Pro', sans-serif; font-size: 18px; color: #080E22; outline: none; transition: border-color 0.3s ease; }
+        .form-group input:focus, .form-group textarea:focus { border-color: #68AFC4; }
+        .form-group input::placeholder, .form-group textarea::placeholder { color: #9CA3AF; }
+        .form-group textarea { min-height: 150px; resize: vertical; }
+        .contact-form button { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 20px 32px; background: #68AFC4; border: none; border-radius: 18px; font-family: 'Kantumruy Pro', sans-serif; font-weight: 600; font-size: 21px; color: white; cursor: pointer; transition: all 0.3s ease; }
+        .contact-form button:hover { background: #227190; transform: translateY(-2px); }
+        
+        /* Footer - transparent to show body gradient */
+        .footer { background: transparent; padding: 64px 43px 43px; border-top: 1px solid rgba(34, 113, 144, 0.3); }
+        .footer-content { max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: 64px; }
+        .footer-main { display: flex; justify-content: space-between; gap: 43px; flex-wrap: wrap; }
+        .footer-brand { display: flex; flex-direction: column; gap: 21.6px; max-width: 300px; }
+        .footer-logo { display: flex; align-items: center; gap: 2px; }
+        .footer-logo img { width: 44px; height: auto; margin-left: -8px; }
+        .footer-logo span { font-family: 'Zen Dots', cursive; font-size: 27px; color: #68AFC4; }
+        .footer-brand p { font-family: 'Kantumruy Pro', sans-serif; font-size: 21.6px; color: #99A1AF; line-height: 1.5; margin: 0; }
+        .footer-links { display: flex; flex: 1; justify-content: space-evenly; max-width: 600px; }
+        .footer-column { display: flex; flex-direction: column; gap: 21.6px; align-items: center; text-align: center; }
+        .footer-column h4 { font-family: 'Gabarito', sans-serif; font-weight: 600; font-size: 21.6px; color: white; margin: 0; }
+        .footer-column ul { list-style: none; display: flex; flex-direction: column; gap: 10.8px; }
+        .footer-column a { font-family: 'Kantumruy Pro', sans-serif; font-size: 21.6px; color: #99A1AF; text-decoration: none; transition: color 0.3s ease; }
+        .footer-column a:hover { color: #68AFC4; }
+        .footer-divider { height: 1px; background: #227190; }
+        .footer-bottom { display: flex; justify-content: space-between; align-items: center; }
+        .footer-copyright { font-family: 'Kantumruy Pro', sans-serif; font-size: 21.6px; color: #99A1AF; }
+        .footer-social { display: flex; gap: 32px; }
+        .footer-social a { color: #99A1AF; transition: color 0.3s ease; }
+        .footer-social a:hover { color: #68AFC4; }
+        .footer-social svg { width: 24px; height: 24px; }
+        
+        /* Responsive Styles */
+        /* Responsive - Intermediate breakpoints for nav scaling */
+        @media (max-width: 1400px) {
+            .logo { font-size: 40px; }
+            .nav-link { font-size: 22px; }
+            .nav-items { gap: 28px; }
+            .nav-wrapper { gap: 25px; }
+            .waitlist-button { font-size: 17px; padding: 14px 22px; }
+        }
+        
+        @media (max-width: 1300px) {
+            .logo { font-size: 36px; }
+            .nav-link { font-size: 20px; }
+            .nav-items { gap: 24px; }
+            .nav-wrapper { gap: 20px; }
+            .waitlist-button { font-size: 16px; padding: 14px 20px; }
+        }
+        
+        @media (max-width: 1200px) {
+            .logo { font-size: 34px; }
+            .nav-link { font-size: 18px; }
+            .nav-items { gap: 18px; }
+            .nav-wrapper { gap: 16px; }
+            .waitlist-button { font-size: 15px; padding: 12px 18px; }
+            .navigation-container { padding: 20px 30px; }
+            .navigation-container.sticky { padding: 16px 30px; }
+        }
+        
+        @media (max-width: 1100px) {
+            .logo { font-size: 30px; }
+            .nav-link { font-size: 16px; }
+            .nav-items { gap: 14px; }
+            .nav-wrapper { gap: 14px; }
+            .waitlist-button { font-size: 14px; padding: 10px 16px; }
+        }
+        
+        @media (max-width: 1024px) {
+            .logo { font-size: 28px; }
+            .nav-link { font-size: 15px; }
+            .nav-items { gap: 12px; }
+            .nav-wrapper { gap: 12px; }
+            .waitlist-button { font-size: 13px; padding: 10px 14px; }
+            .header-title { font-size: 100px; }
+            .typing-text { font-size: 64px; }
+            .header-tagline { font-size: 24px; }
+            .features-title, .founder-header h2, .waitlist-content h2, .contact-info h2 { font-size: 48px; }
+            .features-subtitle, .founder-header p, .waitlist-content p, .contact-info p { font-size: 22px; }
+            .founder-card { flex-direction: column; }
+            .founder-image { width: 100%; min-width: unset; height: 500px; }
+            .founder-image img { object-position: center 20%; }
+            .founder-content { padding: 40px; }
+            .founder-name { font-size: 36px; }
+            .founder-role { font-size: 22px; }
+            .founder-bio p { font-size: 20px; }
+            .waitlist-form { flex-direction: column; max-width: 500px; }
+            .waitlist-form input, .waitlist-form button { width: 100%; }
+            .contact-wrapper { flex-direction: column; gap: 60px; align-items: center; }
+            .contact-info { max-width: 100%; text-align: center; flex: none; width: 100%; }
+            .contact-form-wrapper { max-width: 550px; width: 100%; flex: none; }
+            .footer-main { flex-direction: column; gap: 48px; align-items: center; }
+            .footer-brand { max-width: 100%; text-align: center; align-items: center; }
+            .footer-links { flex-wrap: wrap; gap: 48px; justify-content: center; max-width: 100%; }
+            .footer-bottom { flex-direction: column; gap: 24px; text-align: center; }
+            
+            /* MOBILE FEATURES - Dropdown behavior */
+            .features-buttons { flex-direction: column; }
+            .feature-group { width: 100%; }
+            
+            /* On mobile, all buttons start inactive until clicked */
+            .feature-button.active { 
+                background: #E1ECED; 
+            }
+            .feature-button.active h3, .feature-button.active p { color: #4A5565; }
+            .feature-button.active svg { color: #4A5565; }
+            
+            /* When expanded on mobile, button becomes teal */
+            .feature-group.expanded .feature-button {
+                background: linear-gradient(0deg, #68AFC4 0%, #68AFC4 100%);
+            }
+            .feature-group.expanded .feature-button h3,
+            .feature-group.expanded .feature-button p { color: white; }
+            .feature-group.expanded .feature-button svg { color: white; }
+            
+            /* Show dropdown arrow on mobile */
+            .feature-button .dropdown-arrow { display: block; }
+            .feature-button { min-height: auto; padding: 30px; padding-right: 60px; }
+            .feature-button.active, .feature-button.inactive { min-height: auto; }
+            
+            /* Hide desktop subfeatures container on mobile */
+            .subfeatures-container { display: none !important; }
+            
+            /* Show mobile subfeatures when expanded */
+            .mobile-subfeatures { display: block; max-height: 0; overflow: hidden; }
+            .mobile-subfeatures.expanded { max-height: 2000px; }
+            .mobile-subfeatures-grid { 
+                display: grid; 
+                grid-template-columns: 1fr 1fr; 
+                gap: 16px; 
+                padding: 20px;
+                background: #68AFC4;
+                border-radius: 0 0 20px 20px;
+            }
+            
+            /* Connect subfeatures to button */
+            .feature-button { border-radius: 20px; }
+            .feature-group.expanded .feature-button { border-radius: 20px 20px 0 0; }
+            
+            /* Subfeature box mobile styling - white/transparent on teal background */
+            .mobile-subfeatures .subfeature-box { 
+                padding: 20px; 
+                min-height: auto;
+                background: rgba(255, 255, 255, 0.15);
+                border: 1px solid rgba(255, 255, 255, 0.25);
+            }
+            .mobile-subfeatures .subfeature-box h4 { 
+                font-size: 18px; 
+                margin: 12px 0 8px 0;
+                color: white;
+            }
+            .mobile-subfeatures .subfeature-box p { 
+                font-size: 14px;
+                color: rgba(255, 255, 255, 0.9);
+            }
+            .mobile-subfeatures .subfeature-box-icon { 
+                width: 32px; 
+                height: 32px; 
+            }
+            .mobile-subfeatures .subfeature-box-icon svg { 
+                width: 32px; 
+                height: 32px; 
+            }
+            /* White icons in mobile dropdown */
+            .mobile-subfeatures .subfeature-box-icon svg path {
+                stroke: white;
+            }
+            
+            .subfeatures-grid { grid-template-columns: 1fr; }
+        }
+        
+        @media (max-width: 768px) {
+            /* Mobile nav - full width, touches top and sides */
+            .navigation-container { 
+                margin: 0;
+                padding: 20px 24px;
+                background: #BAD3DA;
+                border-radius: 0;
+                max-width: 100%;
+                width: 100%;
+                /* Start position for scroll-down animation */
+                top: 0;
+                left: 0;
+                transform: none;
+            }
+            /* Hide desktop nav items, show hamburger */
+            .nav-items { display: none; }
+            .waitlist-button { display: none; }
+            .mobile-menu-btn { display: block; }
+            .logo { font-size: 36px; }
+            
+            /* Smaller mobile features grid */
+            .mobile-subfeatures-grid {
+                grid-template-columns: 1fr;
+            }
+            .feature-button h3 { font-size: 24px; }
+            .feature-button p { font-size: 16px; }
+            
+            /* When sticky on mobile - still full width, scroll down from top */
+            .navigation-container.sticky { 
+                position: fixed;
+                top: 0;
+                left: 0;
+                transform: none;
+                width: 100%;
+                max-width: 100%;
+                border-radius: 0;
+                background: rgba(255, 255, 255, 0.15); 
+                backdrop-filter: blur(20px);
+                border: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+                padding: 20px 24px;
+                /* Slide down animation */
+                animation: slideDown 0.3s ease;
+            }
+            
+            @keyframes slideDown {
+                from {
+                    transform: translateY(-100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+            
+            /* Mobile menu dropdown */
+            .nav-items.active { 
+                display: flex; 
+                flex-direction: column; 
+                position: absolute; 
+                top: 100%; 
+                left: 0; 
+                right: 0; 
+                background: white; 
+                padding: 20px; 
+                gap: 16px; 
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+            
+            .header-title { font-size: 60px; }
+            .typing-text { font-size: 52px; }
+            .typing-wrapper { padding: 0 24px; min-height: 180px; }
+            .header-tagline { font-size: 22px; padding: 0 24px; }
+            .features-section, .founder-section, .contact-section { padding: 80px 20px; }
+            .goals-title, .features-title, .founder-header h2, .waitlist-content h2, .contact-info h2 { font-size: 36px; }
+            .goals-subtitle, .features-subtitle, .founder-header p, .waitlist-content p, .contact-info p { font-size: 18px; }
+            .waitlist-section { padding: 80px 20px; cursor: auto; }
+            .waitlist-cursor { display: none; }
+            .waitlist-form input, .waitlist-form button { cursor: auto; }
+            .waitlist-form { flex-direction: column; max-width: 400px; }
+            .waitlist-form input, .waitlist-form button { width: 100%; }
+            .founder-image { height: 450px; }
+            .founder-image img { object-position: center 15%; }
+            .founder-content { padding: 30px; }
+            .founder-name { font-size: 28px; }
+            .founder-bio p { font-size: 16px; }
+            .contact-form { padding: 30px; }
+            .footer { padding: 48px 20px; }
+            
+            /* MOBILE GOALS - No center line, alternating sides */
+            .goals-section {
+                padding: clamp(60px, 12vw, 173px) clamp(20px, 5vw, 40px);
+            }
+            
+            /* Hide the center gradient line on mobile */
+            .goals-timeline::before {
+                display: none;
+            }
+            
+            /* Stack layout instead of 3-column grid */
+            .goal-item {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                padding: 24px 0;
+            }
+            
+            /* Hide the empty placeholder divs */
+            .goal-item.goal-left .goal-right-side,
+            .goal-item.goal-right .goal-left-side {
+                display: none;
+            }
+            
+            /* Show the content divs */
+            .goal-item.goal-left .goal-left-side,
+            .goal-item.goal-right .goal-right-side {
+                visibility: visible;
+                display: flex;
+                align-items: center;
+            }
+            
+            /* LEFT-ALIGNED GOALS (1 & 3): Circle | Number | Text */
+            .goal-item.goal-left {
+                flex-direction: row;
+                justify-content: flex-start;
+            }
+            .goal-item.goal-left .goal-circle {
+                order: 1;
+            }
+            .goal-item.goal-left .goal-left-side {
+                order: 2;
+                flex-direction: row-reverse; /* Reverses Text|Number to Number|Text */
+                padding: 0;
+                gap: 12px;
+            }
+            .goal-item.goal-left .goal-text {
+                text-align: left;
+            }
+            
+            /* RIGHT-ALIGNED GOALS (2 & 4): Text | Number | Circle */
+            .goal-item.goal-right {
+                flex-direction: row-reverse; /* Puts circle on right */
+                justify-content: flex-start;
+            }
+            .goal-item.goal-right .goal-circle {
+                order: 1;
+            }
+            .goal-item.goal-right .goal-right-side {
+                order: 2;
+                flex-direction: row-reverse; /* Reverses Number|Text to Text|Number */
+                padding: 0;
+                gap: 12px;
+            }
+            .goal-item.goal-right .goal-text {
+                text-align: right;
+            }
+            
+            /* Sizing adjustments */
+            .goal-circle {
+                width: 70px;
+                height: 70px;
+                flex-shrink: 0;
+            }
+            .goal-icon {
+                width: 32px;
+                height: 32px;
+            }
+            .goal-number {
+                font-size: 40px;
+                flex-shrink: 0;
+            }
+            .goal-text {
+                font-size: 16px;
+                max-width: none;
+                flex: 1;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .typing-text { font-size: 36px; }
+            .typing-wrapper { min-height: 120px; }
+            .header-tagline { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Dynamic scroll background -->
+    <div class="scroll-background" id="scrollBackground"></div>
+    
+    <!-- NAVIGATION -->
+    <nav class="navigation-container">
+        <div class="nav-wrapper">
+            <h1 class="logo">Iceberg</h1>
+            <div class="nav-items" id="navItems">
+                <a href="#mission" class="nav-link">Our Mission</a>
+                <a href="#goals" class="nav-link">Goals</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#founder" class="nav-link">Founder</a>
+                <a href="#contact" class="nav-link">Contact Us</a>
+            </div>
+            <button class="waitlist-button" onclick="scrollToWaitlist()">Join Waitlist</button>
+            <button class="mobile-menu-btn" onclick="toggleMenu()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M3 5.6665H21V7.6665H3V5.6665ZM3 10.6665H21V12.6665H3V10.6665ZM3 15.6665H21V17.6665H3V15.6665Z"/>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- HEADER SECTION -->
+    <section class="header-section">
+        <div class="typing-container">
+            <div class="typing-wrapper">
+                <span class="typing-text" id="typingText"></span>
+            </div>
+            
+            <h2 class="header-tagline">Some things only reveal themselves in the depths.</h2>
+        </div>
+
+        <div class="scroll-indicator">
+            <span class="scroll-text">Explore Below</span>
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+    <!-- MISSION SECTION -->
+    <section class="mission-section" id="mission">
+        <span class="mission-badge">Our Mission</span>
+        <h2 class="mission-title">Encourage Inquisitive Minds To Challenge Their Beliefs</h2>
+        <div class="mission-content">
+            <p class="mission-text">Iceberg is a safe space for people who love to question everything, built on the belief that real community grows when we learn from each other. Our platform allows you to explore conspiracy theories, learn from diverse perspectives, and engage with a community built on informed discussion.</p>
+            <p class="mission-text">We promote curiosity, healthy dialogue, and stronger media literacy, especially at a time when reliable information matters most. We believe that questioning narratives does not make you a contrarian, it makes you a critical thinker.</p>
+            <p class="mission-text">In a world filled with misinformation, Iceberg empowers you to dig deeper, connect with like-minded individuals, and form your own conclusions based on evidence and open discourse.</p>
+        </div>
+    </section>
+
+    <!-- GOALS SECTION -->
+    <section class="goals-section" id="goals">
+        <div class="goals-header">
+            <span class="goals-badge">Goals</span>
+            <h2 class="goals-title">What We're Building Towards</h2>
+            <p class="goals-subtitle">Four core objectives that guide every decision we make at Iceberg.</p>
+        </div>
+        <div class="goals-timeline">
+            <!-- Goal 1 - Left aligned -->
+            <div class="goal-item goal-left">
+                <div class="goal-left-side">
+                    <p class="goal-text">Build a community of curious individuals who love to question everything</p>
+                    <span class="goal-number">01</span>
+                </div>
+                <div class="goal-circle circle-1">
+                    <svg class="goal-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54 54" fill="none"><path d="M36 47.25V42.75C36 40.36 35.05 38.07 33.36 36.39C31.68 34.7 29.39 33.75 27 33.75H13.5C11.11 33.75 8.82 34.7 7.14 36.39C5.45 38.07 4.5 40.36 4.5 42.75V47.25" stroke="white" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.25 24.75C25.22 24.75 29.25 20.72 29.25 15.75C29.25 10.78 25.22 6.75 20.25 6.75C15.28 6.75 11.25 10.78 11.25 15.75C11.25 20.72 15.28 24.75 20.25 24.75Z" stroke="white" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M36 7C37.93 7.5 39.64 8.66 40.86 10.24C42.08 11.82 42.74 13.76 42.74 15.75C42.74 17.74 42.08 19.68 40.86 21.26C39.64 22.83 37.93 24 36 24.5" stroke="white" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M49.5 47.25V42.75C49.5 40.76 48.83 38.82 47.61 37.24C46.39 35.67 44.68 34.54 42.75 34.04" stroke="white" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="goal-right-side"></div>
+            </div>
+            
+            <!-- Goal 2 - Right aligned -->
+            <div class="goal-item goal-right">
+                <div class="goal-left-side"></div>
+                <div class="goal-circle circle-2">
+                    <svg class="goal-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54 54" fill="none"><path d="M49.5 38.25C49.5 39.44 49.03 40.59 48.18 41.43C47.34 42.28 46.19 42.75 45 42.75H15.36C14.17 42.75 13.03 43.22 12.18 44.07L7.23 49.02C7 49.25 6.72 49.4 6.41 49.46C6.1 49.52 5.78 49.49 5.49 49.37C5.19 49.25 4.94 49.04 4.77 48.78C4.59 48.52 4.5 48.21 4.5 47.89V11.25C4.5 10.06 4.97 8.91 5.82 8.07C6.66 7.22 7.81 6.75 9 6.75H45C46.19 6.75 47.34 7.22 48.18 8.07C49.03 8.91 49.5 10.06 49.5 11.25V38.25Z" stroke="white" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="goal-right-side">
+                    <span class="goal-number">02</span>
+                    <p class="goal-text">Create safe space for open discussion and the exchange of knowledge</p>
+                </div>
+            </div>
+            
+            <!-- Goal 3 - Left aligned -->
+            <div class="goal-item goal-left">
+                <div class="goal-left-side">
+                    <p class="goal-text">Inform users about global events</p>
+                    <span class="goal-number">03</span>
+                </div>
+                <div class="goal-circle circle-3">
+                    <svg class="goal-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54 54" fill="none"><path d="M27 49.5C39.43 49.5 49.5 39.43 49.5 27C49.5 14.57 39.43 4.5 27 4.5C14.57 4.5 4.5 14.57 4.5 27C4.5 39.43 14.57 49.5 27 49.5Z" stroke="white" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M27 4.5C21.22 10.57 18 18.62 18 27C18 35.38 21.22 43.43 27 49.5C32.78 43.43 36 35.38 36 27C36 18.62 32.78 10.57 27 4.5Z" stroke="white" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 27H49.5" stroke="white" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="goal-right-side"></div>
+            </div>
+            
+            <!-- Goal 4 - Right aligned -->
+            <div class="goal-item goal-right">
+                <div class="goal-left-side"></div>
+                <div class="goal-circle circle-4">
+                    <svg class="goal-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54 54" fill="none"><path d="M27 15.75V47.25" stroke="white" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.75 40.5C6.15 40.5 5.58 40.26 5.16 39.84C4.74 39.42 4.5 38.85 4.5 38.25V9C4.5 8.4 4.74 7.83 5.16 7.41C5.58 6.99 6.15 6.75 6.75 6.75H18C20.39 6.75 22.68 7.7 24.36 9.39C26.05 11.07 27 13.36 27 15.75C27 13.36 27.95 11.07 29.64 9.39C31.32 7.7 33.61 6.75 36 6.75H47.25C47.85 6.75 48.42 6.99 48.84 7.41C49.26 7.83 49.5 8.4 49.5 9V38.25C49.5 38.85 49.26 39.42 48.84 39.84C48.42 40.26 47.85 40.5 47.25 40.5H33.75C31.96 40.5 30.24 41.21 28.98 42.48C27.71 43.74 27 45.46 27 47.25C27 45.46 26.29 43.74 25.02 42.48C23.76 41.21 22.04 40.5 20.25 40.5H6.75Z" stroke="white" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="goal-right-side">
+                    <span class="goal-number">04</span>
+                    <p class="goal-text">Equip our members with tools to evaluate the credibility of media and narratives</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES SECTION -->
+    <section class="features-section" id="features">
+        <div class="features-header">
+            <div class="features-badge"><span class="features-badge-text">Features</span></div>
+            <h2 class="features-title">Three Powerful Features, Endless Possibilities</h2>
+            <p class="features-subtitle">Iceberg brings together everything you need to verify, engage, and stay informed in one seamless platform.</p>
+        </div>
+        <div class="features-content">
+            <!-- Feature Groups - Each contains button + mobile subfeatures -->
+            <div class="features-buttons">
+                <div class="feature-group" id="group-0">
+                    <div class="feature-button active" onclick="switchFeature(0)" id="btn-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="54" height="54" viewBox="0 0 54 54" fill="none"><path d="M44.4 28.86C44.4 39.96 36.63 45.51 27.4 48.73C26.91 48.9 26.39 48.89 25.91 48.71C16.65 45.51 8.88 39.96 8.88 28.86V13.32C8.88 12.73 9.11 12.17 9.53 11.75C9.95 11.33 10.51 11.1 11.1 11.1C15.54 11.1 21.09 8.44 24.95 5.06C25.42 4.66 26.02 4.44 26.64 4.44C27.26 4.44 27.86 4.66 28.33 5.06C32.21 8.46 37.74 11.1 42.18 11.1C42.77 11.1 43.34 11.33 43.75 11.75C44.17 12.17 44.4 12.73 44.4 13.32V28.86Z" stroke="currentColor" stroke-width="4.44" stroke-linecap="round" stroke-linejoin="round"/><path d="M19.98 26.64L24.42 31.08L33.3 22.2" stroke="currentColor" stroke-width="4.44" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <h3>Truth Lens</h3>
+                        <p>Verify images, videos, and claims with our AI-powered detection tool.</p>
+                        <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <!-- Mobile Subfeatures for Truth Lens -->
+                    <div class="mobile-subfeatures" id="mobile-sub-0">
+                        <div class="mobile-subfeatures-grid">
+                            <div class="subfeature-box">
+                                <div class="subfeature-box-icon"><svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M5.0752 11.8394V8.45669C5.0752 7.55954 5.43159 6.69913 6.06597 6.06475C6.70035 5.43037 7.56076 5.07397 8.45792 5.07397H11.8406" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M28.7529 5.07397H32.1356C33.0328 5.07397 33.8932 5.43037 34.5276 6.06475C35.162 6.69913 35.5184 7.55954 35.5184 8.45669V11.8394" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M35.5184 28.7532V32.1359C35.5184 33.033 35.162 33.8935 34.5276 34.5278C33.8932 35.1622 33.0328 35.5186 32.1356 35.5186H28.7529" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M11.8406 35.5186H8.45792C7.56076 35.5186 6.70035 35.1622 6.06597 34.5278C5.43159 33.8935 5.0752 33.033 5.0752 32.1359V28.7532" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M11.8398 20.2964H28.7534" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                <h4>Image Forensics</h4>
+                                <p>Detect manipulation in photos and videos instantly.</p>
+                            </div>
+                            <div class="subfeature-box">
+                                <div class="subfeature-box-icon"><svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M23.6802 3.38281H10.1494C9.25223 3.38281 8.39182 3.73921 7.75744 4.37359C7.12305 5.00797 6.76666 5.86838 6.76666 6.76553V33.8274C6.76666 34.7245 7.12305 35.5849 7.75744 36.2193C8.39182 36.8537 9.25223 37.2101 10.1494 37.2101H30.4456C31.3428 37.2101 32.2032 36.8537 32.8376 36.2193C33.4719 35.5849 33.8283 34.7245 33.8283 33.8274V13.5315L23.6802 3.38281Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M23.6797 3.38281V13.531H33.8278" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.2227 23.6792H16.9141L18.6054 20.2964L21.9881 27.062L23.6795 23.6792H25.3708" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                <h4>Metadata Analysis</h4>
+                                <p>Uncover hidden data embedded in files and media.</p>
+                            </div>
+                            <div class="subfeature-box">
+                                <div class="subfeature-box-icon"><svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M20.2964 27.0617C24.0329 27.0617 27.0619 24.0327 27.0619 20.2963C27.0619 16.5598 24.0329 13.5308 20.2964 13.5308C16.56 13.5308 13.531 16.5598 13.531 20.2963C13.531 24.0327 16.56 27.0617 20.2964 27.0617Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.48828 20.2959C3.48828 20.2959 8.56236 8.45654 20.2972 8.45654C32.032 8.45654 37.1061 20.2959 37.1061 20.2959C37.1061 20.2959 32.032 32.1353 20.2972 32.1353C8.56236 32.1353 3.48828 20.2959 3.48828 20.2959Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                <h4>Deepfake Detection</h4>
+                                <p>Identify AI-generated faces and synthetic media.</p>
+                            </div>
+                            <div class="subfeature-box">
+                                <div class="subfeature-box-icon"><svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M25.3708 3.38281V8.45689" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M25.3708 15.2222V20.2963" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M25.3708 27.0618V32.1359" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.76611 27.0618C8.63434 27.0618 10.1488 25.5472 10.1488 23.679C10.1488 21.8108 8.63434 20.2963 6.76611 20.2963C4.89789 20.2963 3.38339 21.8108 3.38339 23.679C3.38339 25.5472 4.89789 27.0618 6.76611 27.0618Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M25.3703 13.531C27.2386 13.531 28.7531 12.0165 28.7531 10.1482C28.7531 8.28001 27.2386 6.76551 25.3703 6.76551C23.5021 6.76551 21.9876 8.28001 21.9876 10.1482C21.9876 12.0165 23.5021 13.531 25.3703 13.531Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M25.3703 33.8271C27.2386 33.8271 28.7531 32.3126 28.7531 30.4444C28.7531 28.5762 27.2386 27.0617 25.3703 27.0617C23.5021 27.0617 21.9876 28.5762 21.9876 30.4444C21.9876 32.3126 23.5021 33.8271 25.3703 33.8271Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.0078 25.0945L21.9879 31.8599" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M21.9879 8.73291L10.0078 22.2637" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                <h4>AI Fingerprinting</h4>
+                                <p>Trace the origin and authenticity of AI-generated content.</p>
+                            </div>
+                            <div class="subfeature-box">
+                                <div class="subfeature-box-icon"><svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M28.7534 23.6797H11.8398" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M28.7534 16.9141H11.8398" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.6054 30.4453H11.8398" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.8818 5.07422H8.45638C7.55923 5.07422 6.69882 5.43061 6.06444 6.06499C5.43005 6.69937 5.07366 7.55979 5.07366 8.45694V35.5188C5.07366 36.4159 5.43005 37.2763 6.06444 37.9107C6.69882 38.5451 7.55923 38.9015 8.45638 38.9015H32.1355C33.0326 38.9015 33.893 38.5451 34.5274 37.9107C35.1618 37.2763 35.5182 36.4159 35.5182 35.5188V8.45694C35.5182 7.55979 35.1618 6.69937 34.5274 6.06499C33.893 5.43061 33.0326 5.07422 32.1355 5.07422H26.7101" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M22.8052 3.38281H17.7905C16.3996 3.38281 15.2227 4.55969 15.2227 5.95058V6.76466C15.2227 8.15555 16.3996 9.33244 17.7905 9.33244H22.8052C24.1961 9.33244 25.373 8.15555 25.373 6.76466V5.95058C25.373 4.55969 24.1961 3.38281 22.8052 3.38281Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                <h4>Text Analysis</h4>
+                                <p>Detect bias, propaganda, and misleading language.</p>
+                            </div>
+                            <div class="subfeature-box">
+                                <div class="subfeature-box-icon"><svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M33.8279 6.76562H6.76611C5.86895 6.76562 5.00854 7.12202 4.37416 7.7564C3.73978 8.39078 3.38339 9.25119 3.38339 10.1483V30.4446C3.38339 31.3418 3.73978 32.2022 4.37416 32.8366C5.00854 33.471 5.86895 33.8274 6.76611 33.8274H33.8279C34.7251 33.8274 35.5855 33.471 36.2199 32.8366C36.8543 32.2022 37.2107 31.3418 37.2107 30.4446V10.1483C37.2107 9.25119 36.8543 8.39078 36.2199 7.7564C35.5855 7.12202 34.7251 6.76562 33.8279 6.76562Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.38339 16.9141H37.2107" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5312 6.76562V33.8274" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                <h4>Fact Checking</h4>
+                                <p>Verify facts against reliable databases and sources.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="feature-group" id="group-1">
+                    <div class="feature-button inactive" onclick="switchFeature(1)" id="btn-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="51" height="51" viewBox="0 0 51 51" fill="none"><path d="M8.46 23.26C13.51 23.26 18.35 25.26 21.92 28.83C25.48 32.4 27.49 37.24 27.49 42.29" stroke="currentColor" stroke-width="4.23" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.46 8.46C17.43 8.46 26.04 12.02 32.38 18.37C38.73 24.71 42.29 33.32 42.29 42.29" stroke="currentColor" stroke-width="4.23" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.57 42.29C11.74 42.29 12.69 41.34 12.69 40.17C12.69 39.01 11.74 38.06 10.57 38.06C9.41 38.06 8.46 39.01 8.46 40.17C8.46 41.34 9.41 42.29 10.57 42.29Z" stroke="currentColor" stroke-width="4.23" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <h3>Iceberg</h3>
+                        <p>Your personalized content stream tailored to your interests and connections.</p>
+                        <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <!-- Mobile Subfeatures for Iceberg -->
+                    <div class="mobile-subfeatures" id="mobile-sub-1">
+                        <div class="mobile-subfeatures-grid">
+                            <div class="subfeature-box">
+                                <div class="subfeature-box-icon"><svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M30.4452 13.531C33.2475 13.531 35.5193 11.2592 35.5193 8.45689C35.5193 5.65456 33.2475 3.38281 30.4452 3.38281C27.6428 3.38281 25.3711 5.65456 25.3711 8.45689C25.3711 11.2592 27.6428 13.531 30.4452 13.531Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.1493 25.3703C12.9516 25.3703 15.2234 23.0986 15.2234 20.2962C15.2234 17.4939 12.9516 15.2222 10.1493 15.2222C7.34694 15.2222 5.0752 17.4939 5.0752 20.2962C5.0752 23.0986 7.34694 25.3703 10.1493 25.3703Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M30.4452 37.2102C33.2475 37.2102 35.5193 34.9384 35.5193 32.1361C35.5193 29.3338 33.2475 27.062 30.4452 27.062C27.6428 27.062 25.3711 29.3338 25.3711 32.1361C25.3711 34.9384 27.6428 37.2102 30.4452 37.2102Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.5293 22.8501L26.0813 29.5817" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M26.0644 11.0107L14.5293 17.7424" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                <h4>Share Theories</h4>
+                                <p>Connect the dots with others exploring similar topics.</p>
+                            </div>
+                            <div class="subfeature-box">
+                                <div class="subfeature-box-icon"><svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M18.1543 8.58522C22.0941 8.11571 26.0794 8.94856 29.5014 10.9566C32.9235 12.9646 35.5943 16.0375 37.106 19.7059C37.2469 20.0857 37.2469 20.5034 37.106 20.8831C36.4844 22.3901 35.6629 23.8066 34.6637 25.0946" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M23.8218 23.9462C22.8648 24.8705 21.5831 25.382 20.2526 25.3704C18.9222 25.3588 17.6496 24.8252 16.7088 23.8844C15.768 22.9436 15.2344 21.671 15.2228 20.3406C15.2113 19.0102 15.7227 17.7285 16.647 16.7715" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M29.5633 29.5973C27.3196 30.9264 24.8164 31.7572 22.2234 32.0335C19.6303 32.3099 17.0082 32.0252 14.5349 31.1988C12.0616 30.3725 9.79496 29.0238 7.88883 27.2442C5.9827 25.4647 4.48166 23.2959 3.48756 20.8851C3.3466 20.5054 3.3466 20.0877 3.48756 19.7079C4.98717 16.0713 7.62576 13.019 11.0073 11.0093" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.38184 3.38281L37.209 37.21" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                <h4>Post Anonymously</h4>
+                                <p>Share your thoughts freely without revealing your identity.</p>
+                            </div>
+                            <div class="subfeature-box">
+                                <div class="subfeature-box-icon"><svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M27.4687 13.125L24.4175 22.2769C24.2514 22.7752 23.9716 23.2279 23.6003 23.5993C23.2289 23.9707 22.7762 24.2505 22.2779 24.4165L13.126 27.4677L16.1772 18.3158C16.3433 17.8175 16.623 17.3648 16.9944 16.9934C17.3658 16.6221 17.8185 16.3423 18.3168 16.1762L27.4687 13.125Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.2964 37.21C29.6375 37.21 37.21 29.6375 37.21 20.2964C37.21 10.9553 29.6375 3.38281 20.2964 3.38281C10.9553 3.38281 3.38281 10.9553 3.38281 20.2964C3.38281 29.6375 10.9553 37.21 20.2964 37.21Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                <h4>Deep Exploration</h4>
+                                <p>Dive deep into topics organized by complexity levels.</p>
+                            </div>
+                            <div class="subfeature-box">
+                                <div class="subfeature-box-icon"><svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M16.3577 6.99538C16.4509 6.01497 16.9063 5.10451 17.6348 4.4419C18.3634 3.77928 19.3129 3.41211 20.2977 3.41211C21.2825 3.41211 22.232 3.77928 22.9606 4.4419C23.6892 5.10451 24.1445 6.01497 24.2377 6.99538C24.2937 7.62872 24.5015 8.23924 24.8435 8.77527C25.1854 9.31129 25.6515 9.75705 26.2022 10.0748C26.7529 10.3926 27.3721 10.5729 28.0073 10.6007C28.6425 10.6285 29.275 10.5028 29.8514 10.2343C30.7463 9.82803 31.7604 9.76924 32.6962 10.0694C33.6321 10.3696 34.4228 11.0072 34.9145 11.8582C35.4061 12.7092 35.5636 13.7127 35.3561 14.6734C35.1487 15.6341 34.5912 16.4833 33.7922 17.0556C33.2719 17.4207 32.8472 17.9057 32.554 18.4696C32.2608 19.0335 32.1077 19.6598 32.1077 20.2954C32.1077 20.931 32.2608 21.5572 32.554 22.1212C32.8472 22.6851 33.2719 23.1701 33.7922 23.5352C34.5912 24.1075 35.1487 24.9567 35.3561 25.9174C35.5636 26.878 35.4061 27.8815 34.9145 28.7326C34.4228 29.5836 33.6321 30.2212 32.6962 30.5214C31.7604 30.8215 30.7463 30.7627 29.8514 30.3564C29.275 30.088 28.6425 29.9623 28.0073 29.9901C27.3721 30.0178 26.7529 30.1982 26.2022 30.516C25.6515 30.8337 25.1854 31.2795 24.8435 31.8155C24.5015 32.3515 24.2937 32.9621 24.2377 33.5954C24.1445 34.5758 23.6892 35.4863 22.9606 36.1489C22.232 36.8115 21.2825 37.1787 20.2977 37.1787C19.3129 37.1787 18.3634 36.8115 17.6348 36.1489C16.9063 35.4863 16.4509 34.5758 16.3577 33.5954C16.3018 32.9618 16.094 32.3511 15.752 31.8149C15.4099 31.2786 14.9437 30.8328 14.3927 30.515C13.8418 30.1972 13.2224 30.0168 12.5869 29.9893C11.9515 29.9617 11.3188 30.0876 10.7424 30.3564C9.84746 30.7627 8.83338 30.8215 7.89751 30.5214C6.96163 30.2212 6.17092 29.5836 5.67926 28.7326C5.1876 27.8815 5.03017 26.878 5.2376 25.9174C5.44504 24.9567 6.00251 24.1075 6.8015 23.5352C7.3218 23.1701 7.74652 22.6851 8.03973 22.1212C8.33294 21.5572 8.48602 20.931 8.48602 20.2954C8.48602 19.6598 8.33294 19.0335 8.03973 18.4696C7.74652 17.9057 7.3218 17.4207 6.8015 17.0556C6.00363 16.483 5.44715 15.6342 5.24021 14.6741C5.03328 13.7141 5.19067 12.7114 5.6818 11.8609C6.17293 11.0105 6.96271 10.373 7.89766 10.0724C8.8326 9.77175 9.84592 9.82948 10.7407 10.2343C11.317 10.5028 11.9496 10.6285 12.5848 10.6007C13.22 10.5729 13.8391 10.3926 13.8899 10.0748C14.4406 9.75705 14.9066 9.31129 15.2486 8.77527C15.5905 8.23924 15.7983 7.62872 15.8543 6.99538" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.2967 25.3703C23.0991 25.3703 25.3708 23.0986 25.3708 20.2962C25.3708 17.4939 23.0991 15.2222 20.2967 15.2222C17.4944 15.2222 15.2227 17.4939 15.2227 20.2962C15.2227 23.0986 17.4944 25.3703 20.2967 25.3703Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                <h4>Customize Feed</h4>
+                                <p>Tailor your experience to match your interests perfectly.</p>
+                            </div>
+                            <div class="subfeature-box">
+                                <div class="subfeature-box-icon"><svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M27.0609 35.5188V32.136C27.0609 30.3417 26.3481 28.6209 25.0793 27.3522C23.8106 26.0834 22.0897 25.3706 20.2954 25.3706H10.1473C8.35297 25.3706 6.63215 26.0834 5.36339 27.3522C4.09462 28.6209 3.38184 30.3417 3.38184 32.136V35.5188" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.2225 18.6051C18.9589 18.6051 21.9879 15.5761 21.9879 11.8397C21.9879 8.10321 18.9589 5.07422 15.2225 5.07422C11.486 5.07422 8.45703 8.10321 8.45703 11.8397C8.45703 15.5761 11.486 18.6051 15.2225 18.6051Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M32.1367 13.5308V23.6789" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M37.2097 18.605H27.0615" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                <h4>Build Community</h4>
+                                <p>Build your network of like-minded explorers.</p>
+                            </div>
+                            <div class="subfeature-box">
+                                <div class="subfeature-box-icon"><svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M18.634 4.75923C18.7064 4.37124 18.9123 4.02081 19.2159 3.76864C19.5196 3.51646 19.9019 3.37842 20.2966 3.37842C20.6913 3.37842 21.0735 3.51646 21.3772 3.76864C21.6808 4.02081 21.8867 4.37124 21.9592 4.75923L23.7368 14.1598C23.863 14.8282 24.1878 15.4429 24.6688 15.9239C25.1497 16.4048 25.7645 16.7296 26.4328 16.8558L35.8334 18.6335C36.2214 18.7059 36.5718 18.9118 36.824 19.2155C37.0762 19.5191 37.2142 19.9014 37.2142 20.2961C37.2142 20.6908 37.0762 21.073 36.824 21.3767C36.5718 21.6803 36.2214 21.8862 35.8334 21.9587L26.4328 23.7363C25.7645 23.8625 25.1497 24.1873 24.6688 24.6683C24.1878 25.1492 23.863 25.764 23.7368 26.4323L21.9592 35.8329C21.8867 36.2209 21.6808 36.5713 21.3772 36.8235C21.0735 37.0757 20.6913 37.2137 20.2966 37.2137C19.9019 37.2137 19.5196 37.0757 19.2159 36.8235C18.9123 36.5713 18.7064 36.2209 18.634 35.8329L16.8563 26.4323C16.7301 25.764 16.4053 25.1492 15.9243 24.6683C15.4434 24.1873 14.8286 23.8625 14.1603 23.7363L4.75972 21.9587C4.37173 21.8862 4.0213 21.6803 3.76912 21.3767C3.51695 21.073 3.37891 20.6908 3.37891 20.2961C3.37891 19.9014 3.51695 19.5191 3.76912 19.2155C4.0213 18.9118 4.37173 18.7059 4.75972 18.6335L14.1603 16.8558C14.8286 16.7296 15.4434 16.4048 15.9243 15.9239C16.4053 15.4429 16.7301 14.8282 16.8563 14.1598L18.634 4.75923Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M33.8281 3.38281V10.1483" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M37.2098 6.76514H30.4443" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.76553 37.2103C8.63376 37.2103 10.1483 35.6958 10.1483 33.8275C10.1483 31.9593 8.63376 30.4448 6.76553 30.4448C4.89731 30.4448 3.38281 31.9593 3.38281 33.8275C3.38281 35.6958 4.89731 37.2103 6.76553 37.2103Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                <h4>Instant Verify</h4>
+                                <p>Fact-check posts without leaving your feed.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="feature-group" id="group-2">
+                    <div class="feature-button inactive" onclick="switchFeature(2)" id="btn-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="51" height="51" viewBox="0 0 51 51" fill="none"><path d="M45.55 31.72H35.95C34.82 31.72 33.75 32.16 32.96 32.95C32.16 33.75 31.72 34.82 31.72 35.95V45.54" stroke="currentColor" stroke-width="4.23" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.8 7.06V10.57C14.8 12.25 15.47 13.87 16.66 15.06C17.85 16.25 19.46 16.92 21.15 16.92C22.27 16.92 23.34 17.36 24.14 18.15C24.93 18.95 25.37 20.02 25.37 21.14C25.37 23.47 27.28 25.37 29.6 25.37C30.72 25.37 31.8 24.93 32.59 24.13C33.39 23.34 33.83 22.27 33.83 21.14C33.83 18.82 35.73 16.92 38.06 16.92H44.76" stroke="currentColor" stroke-width="4.23" stroke-linecap="round" stroke-linejoin="round"/><path d="M25.37 46.52C37.05 46.52 46.52 37.05 46.52 25.37C46.52 13.7 37.05 4.23 25.37 4.23C13.7 4.23 4.23 13.7 4.23 25.37C4.23 37.05 13.7 46.52 25.37 46.52Z" stroke="currentColor" stroke-width="4.23" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <h3>GlobalStream</h3>
+                        <p>Stay informed with global news from verified and trusted sources.</p>
+                        <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <!-- Mobile Subfeatures for GlobalStream -->
+                    <div class="mobile-subfeatures" id="mobile-sub-2">
+                        <div class="mobile-subfeatures-grid">
+                            <div class="subfeature-box">
+                                <div class="subfeature-box-icon"><svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M27.0625 27.0616L32.1366 13.5308L37.2107 27.0616C35.7392 28.161 33.9632 28.753 32.1366 28.753C30.3099 28.753 28.534 28.161 27.0625 27.0616Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.38281 27.0616L8.45689 13.5308L13.531 27.0616C12.0595 28.161 10.2836 28.753 8.45689 28.753C6.63022 28.753 4.8543 28.161 3.38281 27.0616Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M11.8398 35.5186H28.7534" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.2969 5.07422V35.5187" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.0752 11.8398H8.45792C11.8406 11.8398 16.9147 10.1484 20.2974 8.45703C23.6802 10.1484 28.7542 11.8398 32.137 11.8398H35.5197" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                <h4>Bias Indicator</h4>
+                                <p>Identify political leanings in news sources instantly.</p>
+                            </div>
+                            <div class="subfeature-box">
+                                <div class="subfeature-box-icon"><svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M17.3672 35.5186C17.6641 36.0328 18.0911 36.4597 18.6053 36.7566C19.1196 37.0535 19.7029 37.2098 20.2966 37.2098C20.8904 37.2098 21.4737 37.0535 21.9879 36.7566C22.5021 36.4597 22.9292 36.0328 23.2261 35.5186" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M37.2099 13.531C37.2099 9.64085 35.8568 6.25812 33.8271 3.38281" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.51807 25.9219C5.29712 26.164 5.15131 26.4652 5.09837 26.7887C5.04543 27.1122 5.08765 27.4442 5.2199 27.7441C5.35214 28.0441 5.5687 28.2992 5.84325 28.4783C6.11779 28.6575 6.43847 28.753 6.7663 28.7532H33.8281C34.1558 28.7533 34.4766 28.6582 34.7513 28.4794C35.026 28.3006 35.2429 28.0458 35.3755 27.746C35.5081 27.4463 35.5507 27.1144 35.4982 26.7909C35.4457 26.4673 35.3003 26.166 35.0797 25.9236C32.8302 23.6047 30.4453 21.1404 30.4453 13.531C30.4453 10.8395 29.3762 8.25829 27.473 6.35514C25.5699 4.45199 22.9886 3.38281 20.2972 3.38281C17.6057 3.38281 15.0245 4.45199 13.1213 6.35514C11.2182 8.25829 10.149 10.8395 10.149 13.531C10.149 21.1404 7.76251 23.6047 5.51807 25.9219Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.76456 3.38281C4.73492 6.25812 3.38184 9.64085 3.38184 13.531" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                <h4>Topic Alerts</h4>
+                                <p>Get notified about breaking news on topics that matter to you.</p>
+                            </div>
+                            <div class="subfeature-box">
+                                <div class="subfeature-box-icon"><svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M35.5187 5.07422H5.07417C4.14006 5.07422 3.38281 5.83147 3.38281 6.76558V11.8397C3.38281 12.7738 4.14006 13.531 5.07417 13.531H35.5187C36.4528 13.531 37.21 12.7738 37.21 11.8397V6.76558C37.21 5.83147 36.4528 5.07422 35.5187 5.07422Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.7666 13.5308V32.1357C6.7666 33.0329 7.12299 33.8933 7.75738 34.5277C8.39176 35.1621 9.25217 35.5184 10.1493 35.5184H30.4456C31.3428 35.5184 32.2032 35.1621 32.8376 34.5277C33.472 33.8933 33.8284 33.0329 33.8284 32.1357V13.5308" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.9141 20.2959H23.6795" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                <h4>Curated News</h4>
+                                <p>Curated feeds delivered daily from trusted sources.</p>
+                            </div>
+                            <div class="subfeature-box">
+                                <div class="subfeature-box-icon"><svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M24.5864 36.6788C24.6506 36.8389 24.7623 36.9756 24.9065 37.0704C25.0506 37.1652 25.2204 37.2137 25.3929 37.2092C25.5654 37.2048 25.7324 37.1477 25.8715 37.0457C26.0106 36.9436 26.1152 36.8014 26.1712 36.6382L37.165 4.50232C37.2191 4.35246 37.2295 4.19028 37.1948 4.03475C37.1601 3.87923 37.0818 3.7368 36.9692 3.62413C36.8565 3.51146 36.7141 3.43321 36.5586 3.39853C36.403 3.36385 36.2408 3.37418 36.091 3.42831L3.95514 14.4222C3.79192 14.4781 3.64972 14.5827 3.54764 14.7218C3.44556 14.8609 3.38848 15.0279 3.38407 15.2004C3.37965 15.3729 3.4281 15.5427 3.52293 15.6868C3.61775 15.831 3.7544 15.9427 3.91455 16.007L17.327 21.3855C17.751 21.5552 18.1363 21.8091 18.4595 22.1318C18.7828 22.4544 19.0373 22.8392 19.2078 23.2629L24.5864 36.6788Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M36.9634 3.63135L18.46 22.1331" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                <h4>Share Articles</h4>
+                                <p>Send interesting articles straight to your Iceberg feed.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="subfeatures-container" id="subfeatures-0">
+                <div class="subfeature-header">
+                    <div class="subfeature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 54 54" fill="none"><path d="M44.4 28.86C44.4 39.96 36.63 45.51 27.4 48.73C26.91 48.9 26.39 48.89 25.91 48.71C16.65 45.51 8.88 39.96 8.88 28.86V13.32C8.88 12.73 9.11 12.17 9.53 11.75C9.95 11.33 10.51 11.1 11.1 11.1C15.54 11.1 21.09 8.44 24.95 5.06C25.42 4.66 26.02 4.44 26.64 4.44C27.26 4.44 27.86 4.66 28.33 5.06C32.21 8.46 37.74 11.1 42.18 11.1C42.77 11.1 43.34 11.33 43.75 11.75C44.17 12.17 44.4 12.73 44.4 13.32V28.86Z" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M19.98 26.64L24.42 31.08L33.3 22.2" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <div><h3 class="subfeature-title">Truth Lens</h3><p class="subfeature-subtitle">AI-powered verification tools</p></div>
+                </div>
+                <div class="subfeatures-grid">
+                    <div class="subfeature-box">
+                        <div class="subfeature-box-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M5.0752 11.8394V8.45669C5.0752 7.55954 5.43159 6.69913 6.06597 6.06475C6.70035 5.43037 7.56076 5.07397 8.45792 5.07397H11.8406" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M28.7529 5.07397H32.1356C33.0328 5.07397 33.8932 5.43037 34.5276 6.06475C35.162 6.69913 35.5184 7.55954 35.5184 8.45669V11.8394" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M35.5184 28.7532V32.1359C35.5184 33.033 35.162 33.8935 34.5276 34.5278C33.8932 35.1622 33.0328 35.5186 32.1356 35.5186H28.7529" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M11.8406 35.5186H8.45792C7.56076 35.5186 6.70035 35.1622 6.06597 34.5278C5.43159 33.8935 5.0752 33.033 5.0752 32.1359V28.7532" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M11.8398 20.2964H28.7534" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h4>Image Forensics</h4>
+                        <p>Detect manipulation in photos and videos instantly.</p>
+                    </div>
+                    <div class="subfeature-box">
+                        <div class="subfeature-box-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M10.1483 37.2098C9.25119 37.2098 8.39078 36.8534 7.7564 36.219C7.12202 35.5846 6.76563 34.7242 6.76562 33.8271V6.76529C6.76562 5.86814 7.12202 5.00773 7.7564 4.37335C8.39078 3.73897 9.25119 3.38257 10.1483 3.38257H23.6792C24.2146 3.38171 24.7449 3.48677 25.2396 3.6917C25.7342 3.89664 26.1834 4.1974 26.5613 4.57667L32.6299 10.6453C33.0102 11.0233 33.3118 11.4729 33.5173 11.9682C33.7229 12.4634 33.8283 12.9945 33.8274 13.5307V33.8271C33.8274 34.7242 33.471 35.5846 32.8366 36.219C32.2022 36.8534 31.3418 37.2098 30.4447 37.2098H10.1483Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M23.6797 3.38257V11.8394C23.6797 12.2879 23.8579 12.7181 24.1751 13.0353C24.4923 13.3525 24.9225 13.5307 25.371 13.5307H33.8278" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.913 21.1418L13.5303 25.3702L16.913 29.5986" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M23.6797 21.1418L27.0624 25.3702L23.6797 29.5986" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h4>Metadata Analysis</h4>
+                        <p>Analyze hidden data to verify authenticity.</p>
+                    </div>
+                    <div class="subfeature-box">
+                        <div class="subfeature-box-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M3.48853 20.8848C3.34757 20.5051 3.34757 20.0874 3.48853 19.7076C4.86141 16.3788 7.19179 13.5326 10.1842 11.5298C13.1767 9.52694 16.6964 8.45776 20.2973 8.45776C23.8981 8.45776 27.4178 9.52694 30.4103 11.5298C33.4027 13.5326 35.7331 16.3788 37.106 19.7076C37.247 20.0874 37.247 20.5051 37.106 20.8848C35.7331 24.2137 33.4027 27.0599 30.4103 29.0627C27.4178 31.0655 23.8981 32.1347 20.2973 32.1347C16.6964 32.1347 13.1767 31.0655 10.1842 29.0627C7.19179 27.0599 4.86141 24.2137 3.48853 20.8848Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.2967 25.3703C23.0991 25.3703 25.3708 23.0986 25.3708 20.2962C25.3708 17.4939 23.0991 15.2222 20.2967 15.2222C17.4944 15.2222 15.2227 17.4939 15.2227 20.2962C15.2227 23.0986 17.4944 25.3703 20.2967 25.3703Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h4>Deepfake Detection</h4>
+                        <p>Spot unnatural alterations and deepfakes automatically.</p>
+                    </div>
+                    <div class="subfeature-box">
+                        <div class="subfeature-box-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M20.2971 16.9133C19.3999 16.9133 18.5395 17.2697 17.9051 17.9041C17.2708 18.5385 16.9144 19.3989 16.9144 20.2961C16.9144 22.0212 16.7452 24.5414 16.4746 27.0615" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M23.6787 22.1907C23.6787 26.2161 23.6787 32.9816 21.9873 37.21" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M29.2441 35.5522C29.4471 34.5374 29.9714 31.6621 30.0898 30.4443" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.38281 20.2962C3.38281 16.7463 4.49974 13.2864 6.57539 10.4066C8.65103 7.52681 11.5802 5.37309 14.9479 4.25052C18.3156 3.12795 21.9511 3.09345 25.3395 4.15191C28.7279 5.21036 31.6974 7.30811 33.8273 10.148" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.38281 27.0618H3.39973" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M36.8721 27.0615C37.2103 23.6788 37.0936 18.0059 36.8721 16.9133" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.45703 32.9813C9.30271 30.4442 10.1484 25.3701 10.1484 20.2961C10.1467 19.144 10.3411 18.0001 10.7235 16.9133" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.6309 37.2099C14.986 36.0936 15.392 34.9773 15.5949 33.8271" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.2227 11.501C16.7658 10.61 18.5164 10.1411 20.2984 10.1414C22.0803 10.1416 23.8307 10.6111 25.3736 11.5026C26.9165 12.394 28.1975 13.676 29.0877 15.2197C29.978 16.7633 30.446 18.5141 30.4449 20.296V23.6787" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h4>AI Fingerprinting</h4>
+                        <p>Identify AI-generated content by unique patterns.</p>
+                    </div>
+                    <div class="subfeature-box">
+                        <div class="subfeature-box-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M20.2959 6.76538V33.8271" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.76562 11.8395V8.45674C6.76562 8.00816 6.94382 7.57796 7.26101 7.26077C7.5782 6.94358 8.00841 6.76538 8.45698 6.76538H32.136C32.5846 6.76538 33.0148 6.94358 33.332 7.26077C33.6492 7.57796 33.8274 8.00816 33.8274 8.45674V11.8395" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.2227 33.8271H25.3708" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h4>Text Analysis</h4>
+                        <p>Detect machine-generated text with advanced analysis.</p>
+                    </div>
+                    <div class="subfeature-box">
+                        <div class="subfeature-box-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M20.2974 13.5307C28.7044 13.5307 35.5197 11.259 35.5197 8.45665C35.5197 5.65431 28.7044 3.38257 20.2974 3.38257C11.8904 3.38257 5.0752 5.65431 5.0752 8.45665C5.0752 11.259 11.8904 13.5307 20.2974 13.5307Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.0752 8.45679V32.1358C5.0752 33.4816 6.67896 34.7722 9.53369 35.7237C12.3884 36.6753 16.2602 37.2099 20.2974 37.2099C24.3346 37.2099 28.2065 36.6753 31.0612 35.7237C33.9159 34.7722 35.5197 33.4816 35.5197 32.1358V8.45679" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.0752 20.2964C5.0752 21.6421 6.67896 22.9327 9.53369 23.8843C12.3884 24.8359 16.2602 25.3705 20.2974 25.3705C24.3346 25.3705 28.2065 24.8359 31.0612 23.8843C33.9159 22.9327 35.5197 21.6421 35.5197 20.2964" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h4>Fact Checking</h4>
+                        <p>Verify facts against reliable databases and sources.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="subfeatures-container" id="subfeatures-1" style="display: none;">
+                <div class="subfeature-header">
+                    <div class="subfeature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 51 51" fill="none"><path d="M8.46 23.26C13.51 23.26 18.35 25.26 21.92 28.83C25.48 32.4 27.49 37.24 27.49 42.29" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.46 8.46C17.43 8.46 26.04 12.02 32.38 18.37C38.73 24.71 42.29 33.32 42.29 42.29" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.57 42.29C11.74 42.29 12.69 41.34 12.69 40.17C12.69 39.01 11.74 38.06 10.57 38.06C9.41 38.06 8.46 39.01 8.46 40.17C8.46 41.34 9.41 42.29 10.57 42.29Z" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <div><h3 class="subfeature-title">Iceberg</h3><p class="subfeature-subtitle">Your personalized feed</p></div>
+                </div>
+                <div class="subfeatures-grid">
+                    <div class="subfeature-box">
+                        <div class="subfeature-box-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M30.4452 13.531C33.2475 13.531 35.5193 11.2592 35.5193 8.45689C35.5193 5.65456 33.2475 3.38281 30.4452 3.38281C27.6428 3.38281 25.3711 5.65456 25.3711 8.45689C25.3711 11.2592 27.6428 13.531 30.4452 13.531Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.1493 25.3703C12.9516 25.3703 15.2234 23.0986 15.2234 20.2962C15.2234 17.4939 12.9516 15.2222 10.1493 15.2222C7.34694 15.2222 5.0752 17.4939 5.0752 20.2962C5.0752 23.0986 7.34694 25.3703 10.1493 25.3703Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M30.4452 37.2102C33.2475 37.2102 35.5193 34.9384 35.5193 32.1361C35.5193 29.3338 33.2475 27.062 30.4452 27.062C27.6428 27.062 25.3711 29.3338 25.3711 32.1361C25.3711 34.9384 27.6428 37.2102 30.4452 37.2102Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.5293 22.8501L26.0813 29.5817" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M26.0644 11.0107L14.5293 17.7424" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h4>Share Theories</h4>
+                        <p>Connect the dots with others exploring similar topics.</p>
+                    </div>
+                    <div class="subfeature-box">
+                        <div class="subfeature-box-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M18.1543 8.58522C22.0941 8.11571 26.0794 8.94856 29.5014 10.9566C32.9235 12.9646 35.5943 16.0375 37.106 19.7059C37.2469 20.0857 37.2469 20.5034 37.106 20.8831C36.4844 22.3901 35.6629 23.8066 34.6637 25.0946" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M23.8218 23.9462C22.8648 24.8705 21.5831 25.382 20.2526 25.3704C18.9222 25.3588 17.6496 24.8252 16.7088 23.8844C15.768 22.9436 15.2344 21.671 15.2228 20.3406C15.2113 19.0102 15.7227 17.7285 16.647 16.7715" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M29.5633 29.5973C27.3196 30.9264 24.8164 31.7572 22.2234 32.0335C19.6303 32.3099 17.0082 32.0252 14.5349 31.1988C12.0616 30.3725 9.79496 29.0238 7.88883 27.2442C5.9827 25.4647 4.48166 23.2959 3.48756 20.8851C3.3466 20.5054 3.3466 20.0877 3.48756 19.7079C4.98717 16.0713 7.62576 13.019 11.0073 11.0093" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.38184 3.38281L37.209 37.21" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h4>Post Anonymously</h4>
+                        <p>Share your thoughts freely without revealing your identity.</p>
+                    </div>
+                    <div class="subfeature-box">
+                        <div class="subfeature-box-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M27.4687 13.125L24.4175 22.2769C24.2514 22.7752 23.9716 23.2279 23.6003 23.5993C23.2289 23.9707 22.7762 24.2505 22.2779 24.4165L13.126 27.4677L16.1772 18.3158C16.3433 17.8175 16.623 17.3648 16.9944 16.9934C17.3658 16.6221 17.8185 16.3423 18.3168 16.1762L27.4687 13.125Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.2964 37.21C29.6375 37.21 37.21 29.6375 37.21 20.2964C37.21 10.9553 29.6375 3.38281 20.2964 3.38281C10.9553 3.38281 3.38281 10.9553 3.38281 20.2964C3.38281 29.6375 10.9553 37.21 20.2964 37.21Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h4>Deep Exploration</h4>
+                        <p>Dive deep into topics organized by complexity levels.</p>
+                    </div>
+                    <div class="subfeature-box">
+                        <div class="subfeature-box-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M16.3577 6.99538C16.4509 6.01497 16.9063 5.10451 17.6348 4.4419C18.3634 3.77928 19.3129 3.41211 20.2977 3.41211C21.2825 3.41211 22.232 3.77928 22.9606 4.4419C23.6892 5.10451 24.1445 6.01497 24.2377 6.99538C24.2937 7.62872 24.5015 8.23924 24.8435 8.77527C25.1854 9.31129 25.6515 9.75705 26.2022 10.0748C26.7529 10.3926 27.3721 10.5729 28.0073 10.6007C28.6425 10.6285 29.275 10.5028 29.8514 10.2343C30.7463 9.82803 31.7604 9.76924 32.6962 10.0694C33.6321 10.3696 34.4228 11.0072 34.9145 11.8582C35.4061 12.7092 35.5636 13.7127 35.3561 14.6734C35.1487 15.6341 34.5912 16.4833 33.7922 17.0556C33.2719 17.4207 32.8472 17.9057 32.554 18.4696C32.2608 19.0335 32.1077 19.6598 32.1077 20.2954C32.1077 20.931 32.2608 21.5572 32.554 22.1212C32.8472 22.6851 33.2719 23.1701 33.7922 23.5352C34.5912 24.1075 35.1487 24.9567 35.3561 25.9174C35.5636 26.878 35.4061 27.8815 34.9145 28.7326C34.4228 29.5836 33.6321 30.2212 32.6962 30.5214C31.7604 30.8215 30.7463 30.7627 29.8514 30.3564C29.275 30.088 28.6425 29.9623 28.0073 29.9901C27.3721 30.0178 26.7529 30.1982 26.2022 30.516C25.6515 30.8337 25.1854 31.2795 24.8435 31.8155C24.5015 32.3515 24.2937 32.9621 24.2377 33.5954C24.1445 34.5758 23.6892 35.4863 22.9606 36.1489C22.232 36.8115 21.2825 37.1787 20.2977 37.1787C19.3129 37.1787 18.3634 36.8115 17.6348 36.1489C16.9063 35.4863 16.4509 34.5758 16.3577 33.5954C16.3018 32.9618 16.094 32.3511 15.752 31.8149C15.4099 31.2786 14.9437 30.8328 14.3927 30.515C13.8418 30.1972 13.2224 30.0168 12.5869 29.9893C11.9515 29.9617 11.3188 30.0876 10.7424 30.3564C9.84746 30.7627 8.83338 30.8215 7.89751 30.5214C6.96163 30.2212 6.17092 29.5836 5.67926 28.7326C5.1876 27.8815 5.03017 26.878 5.2376 25.9174C5.44504 24.9567 6.00251 24.1075 6.8015 23.5352C7.3218 23.1701 7.74652 22.6851 8.03973 22.1212C8.33294 21.5572 8.48602 20.931 8.48602 20.2954C8.48602 19.6598 8.33294 19.0335 8.03973 18.4696C7.74652 17.9057 7.3218 17.4207 6.8015 17.0556C6.00363 16.483 5.44715 15.6342 5.24021 14.6741C5.03328 13.7141 5.19067 12.7114 5.6818 11.8609C6.17293 11.0105 6.96271 10.373 7.89766 10.0724C8.8326 9.77175 9.84592 9.82948 10.7407 10.2343C11.317 10.5028 11.9496 10.6285 12.5848 10.6007C13.22 10.5729 13.8391 10.3926 14.3899 10.0748C14.9406 9.75705 15.4066 9.31129 15.7486 8.77527C16.0905 8.23924 16.2983 7.62872 16.3543 6.99538" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.2967 25.3703C23.0991 25.3703 25.3708 23.0986 25.3708 20.2962C25.3708 17.4939 23.0991 15.2222 20.2967 15.2222C17.4944 15.2222 15.2227 17.4939 15.2227 20.2962C15.2227 23.0986 17.4944 25.3703 20.2967 25.3703Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h4>Customize Feed</h4>
+                        <p>Tailor your experience to match your interests perfectly.</p>
+                    </div>
+                    <div class="subfeature-box">
+                        <div class="subfeature-box-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M27.0609 35.5188V32.136C27.0609 30.3417 26.3481 28.6209 25.0793 27.3522C23.8106 26.0834 22.0897 25.3706 20.2954 25.3706H10.1473C8.35297 25.3706 6.63215 26.0834 5.36339 27.3522C4.09462 28.6209 3.38184 30.3417 3.38184 32.136V35.5188" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.2225 18.6051C18.9589 18.6051 21.9879 15.5761 21.9879 11.8397C21.9879 8.10321 18.9589 5.07422 15.2225 5.07422C11.486 5.07422 8.45703 8.10321 8.45703 11.8397C8.45703 15.5761 11.486 18.6051 15.2225 18.6051Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M32.1367 13.5308V23.6789" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M37.2097 18.605H27.0615" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h4>Build Community</h4>
+                        <p>Build your network of like-minded explorers.</p>
+                    </div>
+                    <div class="subfeature-box">
+                        <div class="subfeature-box-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M18.634 4.75923C18.7064 4.37124 18.9123 4.02081 19.2159 3.76864C19.5196 3.51646 19.9019 3.37842 20.2966 3.37842C20.6913 3.37842 21.0735 3.51646 21.3772 3.76864C21.6808 4.02081 21.8867 4.37124 21.9592 4.75923L23.7368 14.1598C23.863 14.8282 24.1878 15.4429 24.6688 15.9239C25.1497 16.4048 25.7645 16.7296 26.4328 16.8558L35.8334 18.6335C36.2214 18.7059 36.5718 18.9118 36.824 19.2155C37.0762 19.5191 37.2142 19.9014 37.2142 20.2961C37.2142 20.6908 37.0762 21.073 36.824 21.3767C36.5718 21.6803 36.2214 21.8862 35.8334 21.9587L26.4328 23.7363C25.7645 23.8625 25.1497 24.1873 24.6688 24.6683C24.1878 25.1492 23.863 25.764 23.7368 26.4323L21.9592 35.8329C21.8867 36.2209 21.6808 36.5713 21.3772 36.8235C21.0735 37.0757 20.6913 37.2137 20.2966 37.2137C19.9019 37.2137 19.5196 37.0757 19.2159 36.8235C18.9123 36.5713 18.7064 36.2209 18.634 35.8329L16.8563 26.4323C16.7301 25.764 16.4053 25.1492 15.9243 24.6683C15.4434 24.1873 14.8286 23.8625 14.1603 23.7363L4.75972 21.9587C4.37173 21.8862 4.0213 21.6803 3.76912 21.3767C3.51695 21.073 3.37891 20.6908 3.37891 20.2961C3.37891 19.9014 3.51695 19.5191 3.76912 19.2155C4.0213 18.9118 4.37173 18.7059 4.75972 18.6335L14.1603 16.8558C14.8286 16.7296 15.4434 16.4048 15.9243 15.9239C16.4053 15.4429 16.7301 14.8282 16.8563 14.1598L18.634 4.75923Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M33.8281 3.38281V10.1483" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M37.2098 6.76514H30.4443" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.76553 37.2103C8.63376 37.2103 10.1483 35.6958 10.1483 33.8275C10.1483 31.9593 8.63376 30.4448 6.76553 30.4448C4.89731 30.4448 3.38281 31.9593 3.38281 33.8275C3.38281 35.6958 4.89731 37.2103 6.76553 37.2103Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h4>Instant Verify</h4>
+                        <p>Fact-check posts without leaving your feed.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="subfeatures-container" id="subfeatures-2" style="display: none;">
+                <div class="subfeature-header">
+                    <div class="subfeature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 51 51" fill="none"><path d="M45.55 31.72H35.95C34.82 31.72 33.75 32.16 32.96 32.95C32.16 33.75 31.72 34.82 31.72 35.95V45.54" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.8 7.06V10.57C14.8 12.25 15.47 13.87 16.66 15.06C17.85 16.25 19.46 16.92 21.15 16.92C22.27 16.92 23.34 17.36 24.14 18.15C24.93 18.95 25.37 20.02 25.37 21.14C25.37 23.47 27.28 25.37 29.6 25.37C30.72 25.37 31.8 24.93 32.59 24.13C33.39 23.34 33.83 22.27 33.83 21.14C33.83 18.82 35.73 16.92 38.06 16.92H44.76" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M25.37 46.52C37.05 46.52 46.52 37.05 46.52 25.37C46.52 13.7 37.05 4.23 25.37 4.23C13.7 4.23 4.23 13.7 4.23 25.37C4.23 37.05 13.7 46.52 25.37 46.52Z" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <div><h3 class="subfeature-title">GlobalStream</h3><p class="subfeature-subtitle">Global news from trusted sources</p></div>
+                </div>
+                <div class="subfeatures-grid">
+                    <div class="subfeature-box">
+                        <div class="subfeature-box-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M27.0625 27.0616L32.1366 13.5308L37.2107 27.0616C35.7392 28.161 33.9632 28.753 32.1366 28.753C30.3099 28.753 28.534 28.161 27.0625 27.0616Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.38281 27.0616L8.45689 13.5308L13.531 27.0616C12.0595 28.161 10.2836 28.753 8.45689 28.753C6.63022 28.753 4.8543 28.161 3.38281 27.0616Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M11.8398 35.5186H28.7534" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.2969 5.07422V35.5187" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.0752 11.8398H8.45792C11.8406 11.8398 16.9147 10.1484 20.2974 8.45703C23.6802 10.1484 28.7542 11.8398 32.137 11.8398H35.5197" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h4>Bias Indicator</h4>
+                        <p>Identify political leanings in news sources instantly.</p>
+                    </div>
+                    <div class="subfeature-box">
+                        <div class="subfeature-box-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M17.3672 35.5186C17.6641 36.0328 18.0911 36.4597 18.6053 36.7566C19.1196 37.0535 19.7029 37.2098 20.2966 37.2098C20.8904 37.2098 21.4737 37.0535 21.9879 36.7566C22.5021 36.4597 22.9292 36.0328 23.2261 35.5186" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M37.2099 13.531C37.2099 9.64085 35.8568 6.25812 33.8271 3.38281" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.51807 25.9219C5.29712 26.164 5.15131 26.4652 5.09837 26.7887C5.04543 27.1122 5.08765 27.4442 5.2199 27.7441C5.35214 28.0441 5.5687 28.2992 5.84325 28.4783C6.11779 28.6575 6.43847 28.753 6.7663 28.7532H33.8281C34.1558 28.7533 34.4766 28.6582 34.7513 28.4794C35.026 28.3006 35.2429 28.0458 35.3755 27.746C35.5081 27.4463 35.5507 27.1144 35.4982 26.7909C35.4457 26.4673 35.3003 26.166 35.0797 25.9236C32.8302 23.6047 30.4453 21.1404 30.4453 13.531C30.4453 10.8395 29.3762 8.25829 27.473 6.35514C25.5699 4.45199 22.9886 3.38281 20.2972 3.38281C17.6057 3.38281 15.0245 4.45199 13.1213 6.35514C11.2182 8.25829 10.149 10.8395 10.149 13.531C10.149 21.1404 7.76251 23.6047 5.51807 25.9219Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.76456 3.38281C4.73492 6.25812 3.38184 9.64085 3.38184 13.531" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h4>Topic Alerts</h4>
+                        <p>Get notified about breaking news on topics that matter to you.</p>
+                    </div>
+                    <div class="subfeature-box">
+                        <div class="subfeature-box-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M35.5187 5.07422H5.07417C4.14006 5.07422 3.38281 5.83147 3.38281 6.76558V11.8397C3.38281 12.7738 4.14006 13.531 5.07417 13.531H35.5187C36.4528 13.531 37.21 12.7738 37.21 11.8397V6.76558C37.21 5.83147 36.4528 5.07422 35.5187 5.07422Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.7666 13.5308V32.1357C6.7666 33.0329 7.12299 33.8933 7.75738 34.5277C8.39176 35.1621 9.25217 35.5184 10.1493 35.5184H30.4456C31.3428 35.5184 32.2032 35.1621 32.8376 34.5277C33.472 33.8933 33.8284 33.0329 33.8284 32.1357V13.5308" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.9141 20.2959H23.6795" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h4>Curated News</h4>
+                        <p>Curated feeds delivered daily from trusted sources.</p>
+                    </div>
+                    <div class="subfeature-box">
+                        <div class="subfeature-box-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none"><path d="M24.5864 36.6788C24.6506 36.8389 24.7623 36.9756 24.9065 37.0704C25.0506 37.1652 25.2204 37.2137 25.3929 37.2092C25.5654 37.2048 25.7324 37.1477 25.8715 37.0457C26.0106 36.9436 26.1152 36.8014 26.1712 36.6382L37.165 4.50232C37.2191 4.35246 37.2295 4.19028 37.1948 4.03475C37.1601 3.87923 37.0818 3.7368 36.9692 3.62413C36.8565 3.51146 36.7141 3.43321 36.5586 3.39853C36.403 3.36385 36.2408 3.37418 36.091 3.42831L3.95514 14.4222C3.79192 14.4781 3.64972 14.5827 3.54764 14.7218C3.44556 14.8609 3.38848 15.0279 3.38407 15.2004C3.37965 15.3729 3.4281 15.5427 3.52293 15.6868C3.61775 15.831 3.7544 15.9427 3.91455 16.007L17.327 21.3855C17.751 21.5552 18.1363 21.8091 18.4595 22.1318C18.7828 22.4544 19.0373 22.8392 19.2078 23.2629L24.5864 36.6788Z" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/><path d="M36.9634 3.63135L18.46 22.1331" stroke="#68AFC4" stroke-width="3.38272" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h4>Share Articles</h4>
+                        <p>Send interesting articles straight to your Iceberg feed.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOUNDER SECTION -->
+    <section class="founder-section" id="founder">
+        <div class="founder-header">
+            <span class="founder-badge">Founder</span>
+            <h2>Built By A Puzzle Solver</h2>
+            <p>Where engineering logic meets restless curiosity—and the best questions don't have easy answers.</p>
+        </div>
+        <div class="founder-card">
+            <div class="founder-image">
+                <img src="founder-image.jpg" alt="Jade Bryant - Founder of Iceberg">
+            </div>
+            <div class="founder-content">
+                <h3 class="founder-name">Jade Bryant</h3>
+                <p class="founder-role">Founder</p>
+                <div class="founder-bio">
+                    <p>Jade Bryant has always been the kind of person who cannot resist a good puzzle. That curiosity led her to pursue a B.S. in Aeronautical Engineering Technology at Purdue University, where she quickly realized that some of the best mysteries lived beyond the pages of her textbooks.</p>
+                    <p>Walking the same halls where Amelia Earhart once taught, Jade couldn't help but wonder: what really happened to her? As she followed the tradition of retracing Neil Armstrong's first steps in front of the Armstrong building, she found herself wondering whether that first moon landing broadcast unfolded exactly the way we have always believed. Those were not idle thoughts, they sparked a deeper belief that the most interesting questions rarely have simple answers.</p>
+                    <p>That blend of engineering logic and restless curiosity is what ultimately inspired Iceberg, a space for people who love digging past the surface, comparing what they find, and learning from each other.</p>
+                </div>
+                <a href="https://www.linkedin.com/in/jade-bryant-5b1759156" target="_blank" class="founder-linkedin" aria-label="Connect with Jade on LinkedIn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                </a>
+                <div class="founder-divider"></div>
+                <div class="founder-credentials">
+                    <div class="credential-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                            <path d="M6 12v5c0 1.657 2.686 3 6 3s6-1.343 6-3v-5"/>
+                        </svg>
+                        <span>Purdue University</span>
+                    </div>
+                    <div class="credential-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <g transform="rotate(45 12 12)">
+                                <path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
+                            </g>
+                        </svg>
+                        <span>B.S. Aeronautical Engineering Technology</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WAITLIST SECTION -->
+    <section class="waitlist-section" id="waitlist">
+        <!-- Floating Particles -->
+        <div class="waitlist-particles" id="waitlistParticles"></div>
+        
+        <div class="waitlist-content">
+            <h2>Be First to Explore</h2>
+            <p>Join our waitlist and be among the first to dive beneath the surface when Iceberg launches.</p>
+        </div>
+        <form class="waitlist-form" id="waitlistForm">
+            <div class="waitlist-input-wrapper" id="waitlistInputWrapper">
+                <input type="email" id="waitlistEmail" name="EMAIL" placeholder="Enter your email" required>
+            </div>
+            <!-- Honeypot field for spam protection - do not remove -->
+            <div style="position: absolute; left: -5000px;" aria-hidden="true">
+                <input type="text" name="b_a98ef73f65b46d2ea1b6b90a9_6585991423" tabindex="-1" value="" id="honeypot">
+            </div>
+            <button type="submit" id="waitlistBtn">Join Waitlist</button>
+        </form>
+    </section>
+    
+    <!-- Custom Cursor for Waitlist -->
+    <div class="waitlist-cursor" id="waitlistCursor"></div>
+
+    <!-- CONTACT SECTION -->
+    <section class="contact-section" id="contact">
+        <div class="contact-wrapper">
+            <div class="contact-info">
+                <h2>Get in Touch</h2>
+                <p>Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+            </div>
+            <div class="contact-form-wrapper">
+                <form class="contact-form" id="contactForm">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" placeholder="Your name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" placeholder="Tell us what's on your mind..." required></textarea>
+                    </div>
+                    <button type="submit" id="contactBtn">
+                        Send Message
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-main">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <img src="iceberg-logo.png" alt="Iceberg Logo">
+                        <span>Iceberg</span>
+                    </div>
+                    <p>The next generation social media platform for authentic connections.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Product</h4>
+                        <ul>
+                            <li><a href="#features">Features</a></li>
+                            <li><a href="#goals">Goals</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Company</h4>
+                        <ul>
+                            <li><a href="#mission">Our Mission</a></li>
+                            <li><a href="#founder">Founder</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Legal</h4>
+                        <ul>
+                            <li><a href="#">Privacy</a></li>
+                            <li><a href="#">Terms</a></li>
+                            <li><a href="#contact">Contact</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-divider"></div>
+            <div class="footer-bottom">
+                <span class="footer-copyright">© 2025 Iceberg. All rights reserved.</span>
+                <div class="footer-social">
+                    <a href="#" aria-label="TikTok"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg></a>
+                    <a href="#" aria-label="Twitter"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+                    <a href="#" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+                    <a href="#" aria-label="Instagram"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ========== HEADER TYPING ANIMATION ==========
+        const phrases = [
+            "What really happened in Roswell?",
+            "Where does Bigfoot live?",
+            "What species is Nessie?",
+            "Was it always Berenstain Bears?",
+            "Where is Atlantis located?",
+            "What's at the bottom of the ocean?",
+            "Are we alone in the universe?",
+            "What's the most haunted place on Earth?",
+            "Do parallel universes exist?",
+            "Was the Titanic doomed before it sailed?"
+        ];
+
+        const typingText = document.getElementById('typingText');
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let isPaused = false;
+
+        const typingSpeed = 80;
+        const deletingSpeed = 40;
+        const pauseBeforeDelete = 2000;
+        const pauseBeforeType = 500;
+
+        function type() {
+            const currentPhrase = phrases[phraseIndex];
+            
+            if (isPaused) {
+                return;
+            }
+
+            if (!isDeleting) {
+                typingText.textContent = currentPhrase.substring(0, charIndex + 1);
+                charIndex++;
+
+                if (charIndex === currentPhrase.length) {
+                    isPaused = true;
+                    setTimeout(() => {
+                        isPaused = false;
+                        isDeleting = true;
+                        type();
+                    }, pauseBeforeDelete);
+                    return;
+                }
+            } else {
+                typingText.textContent = currentPhrase.substring(0, charIndex - 1);
+                charIndex--;
+
+                if (charIndex === 0) {
+                    isDeleting = false;
+                    phraseIndex = (phraseIndex + 1) % phrases.length;
+                    isPaused = true;
+                    setTimeout(() => {
+                        isPaused = false;
+                        type();
+                    }, pauseBeforeType);
+                    return;
+                }
+            }
+
+            const speed = isDeleting ? deletingSpeed : typingSpeed;
+            setTimeout(type, speed);
+        }
+
+        // Start typing after a short delay
+        setTimeout(type, 1000);
+
+        // ========== SCROLL-BASED BACKGROUND ==========
+        const scrollBackground = document.getElementById('scrollBackground');
+        
+        // Color stops for the gradient transition
+        // Start: #BAD3DA (light blue) -> Middle: #227190 (teal) -> End: #080E22 (dark navy)
+        const colorStops = [
+            { pos: 0, r: 186, g: 211, b: 218 },    // #BAD3DA - light blue
+            { pos: 0.35, r: 34, g: 113, b: 144 },   // #227190 - teal
+            { pos: 1, r: 8, g: 14, b: 34 }          // #080E22 - dark navy
+        ];
+        
+        function interpolateColor(scrollPercent) {
+            // Find which two color stops we're between
+            let startStop = colorStops[0];
+            let endStop = colorStops[colorStops.length - 1];
+            
+            for (let i = 0; i < colorStops.length - 1; i++) {
+                if (scrollPercent >= colorStops[i].pos && scrollPercent <= colorStops[i + 1].pos) {
+                    startStop = colorStops[i];
+                    endStop = colorStops[i + 1];
+                    break;
+                }
+            }
+            
+            // Calculate position between the two stops (0 to 1)
+            const range = endStop.pos - startStop.pos;
+            const localPercent = range > 0 ? (scrollPercent - startStop.pos) / range : 0;
+            
+            // Interpolate RGB values
+            const r = Math.round(startStop.r + (endStop.r - startStop.r) * localPercent);
+            const g = Math.round(startStop.g + (endStop.g - startStop.g) * localPercent);
+            const b = Math.round(startStop.b + (endStop.b - startStop.b) * localPercent);
+            
+            return `rgb(${r}, ${g}, ${b})`;
+        }
+        
+        function updateScrollBackground() {
+            const scrollY = window.scrollY;
+            const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = Math.min(scrollY / documentHeight, 1);
+            
+            const color = interpolateColor(scrollPercent);
+            scrollBackground.style.background = color;
+        }
+        
+        // Update on scroll
+        window.addEventListener('scroll', updateScrollBackground);
+        
+        // Initial call
+        updateScrollBackground();
+
+        // Mobile menu toggle
+        function toggleMenu() {
+            const navItems = document.getElementById('navItems');
+            navItems.classList.toggle('active');
+        }
+
+        // Sticky navigation - triggers when entering mission section
+        window.addEventListener('scroll', function() {
+            const nav = document.querySelector('.navigation-container');
+            const missionSection = document.getElementById('mission');
+            
+            // Get the position of mission section relative to viewport
+            const missionTop = missionSection.getBoundingClientRect().top;
+            
+            // Trigger sticky when mission section reaches top of viewport (or slightly before)
+            if (missionTop <= 50) {
+                nav.classList.add('sticky');
+            } else {
+                nav.classList.remove('sticky');
+            }
+        });
+
+        // Scroll to waitlist section
+        function scrollToWaitlist() {
+            const waitlistSection = document.getElementById('waitlist');
+            waitlistSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Feature tab switching - handles both desktop and mobile
+        function switchFeature(index) {
+            const isMobile = window.innerWidth <= 1024;
+            
+            if (isMobile) {
+                // Mobile: Toggle dropdown behavior
+                const btn = document.getElementById('btn-' + index);
+                const group = document.getElementById('group-' + index);
+                const mobileSub = document.getElementById('mobile-sub-' + index);
+                
+                // Check if this one is already expanded
+                const isExpanded = mobileSub.classList.contains('expanded');
+                
+                // Close all dropdowns first
+                for (let i = 0; i < 3; i++) {
+                    const otherBtn = document.getElementById('btn-' + i);
+                    const otherGroup = document.getElementById('group-' + i);
+                    const otherSub = document.getElementById('mobile-sub-' + i);
+                    
+                    otherBtn.classList.remove('expanded');
+                    otherGroup.classList.remove('expanded');
+                    otherSub.classList.remove('expanded');
+                    
+                    // Reset all to inactive on mobile
+                    otherBtn.classList.remove('active');
+                    otherBtn.classList.add('inactive');
+                }
+                
+                // If it wasn't expanded, expand it now
+                if (!isExpanded) {
+                    btn.classList.add('expanded');
+                    btn.classList.remove('inactive');
+                    btn.classList.add('active');
+                    group.classList.add('expanded');
+                    mobileSub.classList.add('expanded');
+                }
+            } else {
+                // Desktop: Tab switching behavior
+                for (let i = 0; i < 3; i++) {
+                    const btn = document.getElementById('btn-' + i);
+                    const container = document.getElementById('subfeatures-' + i);
+                    if (i === index) {
+                        btn.classList.remove('inactive');
+                        btn.classList.add('active');
+                        if (container) container.style.display = 'flex';
+                    } else {
+                        btn.classList.remove('active');
+                        btn.classList.add('inactive');
+                        if (container) container.style.display = 'none';
+                    }
+                }
+            }
+        }
+        
+        // Handle window resize - reset states when switching between mobile and desktop
+        window.addEventListener('resize', function() {
+            initializeFeatures();
+        });
+        
+        // Initialize features based on screen size
+        function initializeFeatures() {
+            const isMobile = window.innerWidth <= 1024;
+            
+            for (let i = 0; i < 3; i++) {
+                const btn = document.getElementById('btn-' + i);
+                const group = document.getElementById('group-' + i);
+                const mobileSub = document.getElementById('mobile-sub-' + i);
+                const container = document.getElementById('subfeatures-' + i);
+                
+                // Reset expanded states
+                btn.classList.remove('expanded');
+                if (group) group.classList.remove('expanded');
+                if (mobileSub) mobileSub.classList.remove('expanded');
+                
+                if (isMobile) {
+                    // Mobile: All buttons start inactive (unselected)
+                    btn.classList.remove('active');
+                    btn.classList.add('inactive');
+                } else {
+                    // Desktop: First one active, others inactive
+                    if (i === 0) {
+                        btn.classList.remove('inactive');
+                        btn.classList.add('active');
+                        if (container) container.style.display = 'flex';
+                    } else {
+                        btn.classList.remove('active');
+                        btn.classList.add('inactive');
+                        if (container) container.style.display = 'none';
+                    }
+                }
+            }
+        }
+        
+        // Run on page load
+        document.addEventListener('DOMContentLoaded', initializeFeatures);
+
+        // ========== WAITLIST SECTION ENHANCEMENTS ==========
+        
+        // Create floating particles for waitlist section
+        function createWaitlistParticles() {
+            const container = document.getElementById('waitlistParticles');
+            if (!container) return;
+            const particleCount = 20;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('waitlist-particle');
+                
+                const size = Math.random() * 20 + 5;
+                const left = Math.random() * 100;
+                const duration = Math.random() * 10 + 10;
+                const delay = Math.random() * 10;
+
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = left + '%';
+                particle.style.bottom = '0';
+                particle.style.animationDuration = duration + 's';
+                particle.style.animationDelay = delay + 's';
+
+                container.appendChild(particle);
+            }
+        }
+
+        // Custom cursor for waitlist section
+        const waitlistCursor = document.getElementById('waitlistCursor');
+        const waitlistSection = document.getElementById('waitlist');
+        let lastBubbleTime = 0;
+        const bubbleInterval = 80;
+        let cursorInWaitlist = false;
+
+        if (waitlistSection && waitlistCursor) {
+            waitlistSection.addEventListener('mouseenter', () => {
+                cursorInWaitlist = true;
+                waitlistCursor.style.opacity = '1';
+            });
+
+            waitlistSection.addEventListener('mouseleave', () => {
+                cursorInWaitlist = false;
+                waitlistCursor.style.opacity = '0';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (waitlistCursor) {
+                    waitlistCursor.style.left = e.clientX + 'px';
+                    waitlistCursor.style.top = e.clientY + 'px';
+                }
+
+                if (cursorInWaitlist) {
+                    const now = Date.now();
+                    if (now - lastBubbleTime > bubbleInterval) {
+                        createCursorBubble(e.clientX, e.clientY);
+                        lastBubbleTime = now;
+                    }
+                }
+            });
+
+            document.addEventListener('mousedown', () => {
+                if (waitlistCursor) waitlistCursor.classList.add('clicking');
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (waitlistCursor) waitlistCursor.classList.remove('clicking');
+            });
+        }
+
+        function createCursorBubble(x, y) {
+            const bubble = document.createElement('div');
+            bubble.classList.add('cursor-bubble');
+            
+            const size = Math.random() * 12 + 6;
+            bubble.style.width = size + 'px';
+            bubble.style.height = size + 'px';
+            
+            const offsetX = (Math.random() - 0.5) * 20;
+            const offsetY = (Math.random() - 0.5) * 10;
+            bubble.style.left = (x + offsetX) + 'px';
+            bubble.style.top = (y + offsetY) + 'px';
+
+            document.body.appendChild(bubble);
+
+            setTimeout(() => {
+                bubble.remove();
+            }, 1500);
+        }
+
+        // Email input and button interaction
+        const waitlistEmailInput = document.getElementById('waitlistEmail');
+        const waitlistInputWrapper = document.getElementById('waitlistInputWrapper');
+        const waitlistBtn = document.getElementById('waitlistBtn');
+
+        if (waitlistEmailInput && waitlistInputWrapper && waitlistBtn) {
+            waitlistEmailInput.addEventListener('focus', () => {
+                waitlistInputWrapper.classList.add('focused');
+            });
+
+            waitlistEmailInput.addEventListener('blur', () => {
+                waitlistInputWrapper.classList.remove('focused');
+                if (waitlistEmailInput.value.trim() === '') {
+                    waitlistInputWrapper.classList.remove('has-content');
+                }
+            });
+
+            waitlistEmailInput.addEventListener('input', () => {
+                if (waitlistEmailInput.value.trim() !== '') {
+                    waitlistInputWrapper.classList.add('has-content');
+                    waitlistBtn.classList.add('typing');
+                } else {
+                    waitlistInputWrapper.classList.remove('has-content');
+                    waitlistBtn.classList.remove('typing');
+                }
+            });
+        }
+
+        // Initialize waitlist particles
+        createWaitlistParticles();
+
+        // Waitlist form submission - sends to Mailchimp
+        const waitlistForm = document.getElementById('waitlistForm');
+        if (waitlistForm) {
+            waitlistForm.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                const button = document.getElementById('waitlistBtn');
+                const emailInput = document.getElementById('waitlistEmail');
+                const email = emailInput.value;
+                const honeypot = document.getElementById('honeypot').value;
+                
+                // If honeypot is filled, it's a bot
+                if (honeypot) return;
+                
+                // Show loading state
+                button.textContent = 'Joining...';
+                button.disabled = true;
+                
+                try {
+                    // Submit to Mailchimp via their JSON endpoint
+                    const mailchimpUrl = 'https://codenameiceberg.us10.list-manage.com/subscribe/post-json?u=a98ef73f65b46d2ea1b6b90a9&id=6585991423&f_id=00ffdbe5f0&EMAIL=' + encodeURIComponent(email) + '&c=callback';
+                    
+                    // Use JSONP for Mailchimp (they don't support CORS)
+                    await new Promise((resolve, reject) => {
+                        window.callback = function(response) {
+                            resolve(response);
+                        };
+                        const script = document.createElement('script');
+                        script.src = mailchimpUrl;
+                        script.onerror = reject;
+                        document.body.appendChild(script);
+                        // Cleanup after 5 seconds
+                        setTimeout(() => {
+                            document.body.removeChild(script);
+                            resolve();
+                        }, 5000);
+                    });
+                    
+                    // Show success
+                    waitlistForm.classList.add('success');
+                    button.textContent = '✓ You\'re In!';
+                    
+                    // Reset after 3 seconds
+                    setTimeout(() => {
+                        waitlistForm.classList.remove('success');
+                        button.textContent = 'Join Waitlist';
+                        button.disabled = false;
+                        emailInput.value = '';
+                        if (waitlistInputWrapper) waitlistInputWrapper.classList.remove('has-content');
+                        if (waitlistBtn) waitlistBtn.classList.remove('typing');
+                    }, 3000);
+                    
+                } catch (error) {
+                    console.error('Waitlist error:', error);
+                    button.textContent = 'Try Again';
+                    button.disabled = false;
+                }
+            });
+        }
+
+        // Contact form submission - sends to Formspree
+        const contactForm = document.getElementById('contactForm');
+        if (contactForm) {
+            contactForm.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                const button = document.getElementById('contactBtn');
+                const originalContent = button.innerHTML;
+                
+                // Show loading state
+                button.innerHTML = 'Sending...';
+                button.disabled = true;
+                
+                const formData = new FormData(contactForm);
+                
+                try {
+                    const response = await fetch('https://formspree.io/f/mwpgakae', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        // Show success
+                        button.innerHTML = '✓ Message Sent!';
+                        button.style.background = '#227190';
+                        
+                        // Reset form
+                        contactForm.reset();
+                        
+                        // Reset button after 3 seconds
+                        setTimeout(() => {
+                            button.innerHTML = originalContent;
+                            button.style.background = '';
+                            button.disabled = false;
+                        }, 3000);
+                    } else {
+                        throw new Error('Form submission failed');
+                    }
+                } catch (error) {
+                    console.error('Contact form error:', error);
+                    button.innerHTML = 'Error - Try Again';
+                    button.disabled = false;
+                    setTimeout(() => {
+                        button.innerHTML = originalContent;
+                    }, 3000);
+                }
+            });
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                    document.getElementById('navItems').classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
